@@ -1,6 +1,7 @@
 body {
     background-color: #FFF5EB;
     padding: 0 10% 10% 10%;
+    height: 10px;
 }
 h1 {
     text-indent: 1em;
@@ -183,6 +184,7 @@ div#powersupply{
     top: 150px;
     left: 15px;
     width: 50px;
+    cursor: not-allowed;
 }
 #powersupply14{
     top: 230px;
@@ -319,6 +321,12 @@ div#powersupply{
     width: 20px;
     background-color: #CCCCCC;
 }
+#power_choice_hint{
+    display: inline-block;
+    text-align: center;
+    border-style: solid;
+    padding: 7px;
+}
 .buttonInactive
 {
     background-color: white;
@@ -331,13 +339,14 @@ div#powersupply{
 }
 #form1{
     position: relative;
-    top: -100px;
+    width: 300px;
     left: 800px;
 }
 #form2{
     position: relative;
     width: 300px;
-    left: -100px;
+    top: -115px;
+    left: 0px;
 }
 #error_message{
     background-color : PaleGreen;
@@ -345,7 +354,7 @@ div#powersupply{
     width : 350px;
     height : 100px;
     left : 550px;
-    top : 150px;
+    top : 190px;
     z-index: 1;
 }
 #submitbuttom{
@@ -368,12 +377,17 @@ div#powersupply{
 #camera{
     position: absolute;
     width: 200px;
-    left: 1300px;
+    left: 1200px;
     top: 110px;
 }
-#circuit{
-    position: absolute;
-    width: 200px;
-    left: 300px;
-    top: 550px;
+#myProgress{
+    width: 250px;
+}
+#myBar{
+    width: 0%;
+    height: 5px;
+    background-color: #04AA6D;
+    text-align: center; /* To center it horizontally (if you want) */
+    line-height: 5px; /* To center it vertically */
+    color: white;
 }

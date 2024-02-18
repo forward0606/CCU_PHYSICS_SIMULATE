@@ -183,11 +183,13 @@ div#powersupply{
     top: 150px;
     left: 15px;
     width: 50px;
+    cursor: not-allowed;
 }
 #powersupply14{
     top: 230px;
     left: 15px;
     width: 50px;
+    cursor: not-allowed;
 }
 #powersupply15{
     top: 230px;
@@ -331,14 +333,13 @@ div#powersupply{
 }
 #form1{
     position: relative;
-    width: 300px;
+    top: -100px;
     left: 800px;
 }
 #form2{
     position: relative;
     width: 300px;
-    top: -100px;
-    left: 0px;
+    left: -100px;
 }
 #error_message{
     background-color : PaleGreen;
@@ -369,6 +370,12 @@ div#powersupply{
 #camera{
     position: absolute;
     width: 200px;
-    left: 1200px;
+    left: 1300px;
     top: 110px;
+}
+#circuit{
+    position: absolute;
+    width: 200px;
+    left: 300px;
+    top: 550px;
 }

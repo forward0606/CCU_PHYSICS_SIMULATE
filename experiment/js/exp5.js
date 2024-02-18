@@ -39,30 +39,6 @@ const meter2_counterclockwise = document.querySelector("#multimeter2_2");
 
 var current1 = 0, voltage1 = 0, current2 = 0, voltage2 = 0, power = 0, powersupplyOutputStatus = 0;
 
-// 顯示或隱藏子選單
-function switchMenu(theMainMenu, theSubMenu, theEvent) {
-    var SubMenu = document.getElementById(theSubMenu);
-    if (SubMenu.style.display == 'none') { // 顯示子選單
-        SubMenu.style.minWidth = theMainMenu.clientWidth; // 讓子選單的最小寬度與主選單相同 (僅為了美觀)
-        SubMenu.style.display = 'block';
-        hideMenu(); // 隱藏子選單
-        VisibleMenu = theSubMenu;
-    }
-    else { // 隱藏子選單
-        if (theEvent != 'MouseOver' || VisibleMenu != theSubMenu) {
-            SubMenu.style.display = 'none';
-            VisibleMenu = '';
-        }
-    }
-}
-
-// 隱藏子選單
-function hideMenu() {
-    if (VisibleMenu != '') {
-        document.getElementById(VisibleMenu).style.display = 'none';
-    }
-    VisibleMenu = '';
-}
 
 document.getElementById("powersupply14").onclick = function () {
     if (drawResistance == 1) {
@@ -173,6 +149,7 @@ document.getElementById("powersupply13").onclick = function () {
 
 var intervalID;
 $(powersupply5).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval(function (){
         turnOffMode();
         if (power == 1 && current1 <= 3) {
@@ -187,6 +164,7 @@ $(powersupply5).mousedown(function (){
 });
 
 $(powersupply6).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1) {
@@ -203,6 +181,7 @@ $(powersupply6).mousedown(function (){
 });
 
 $(powersupply7).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
         turnOffMode();
         if (power == 1 && voltage1 <= 30) {
@@ -216,6 +195,7 @@ $(powersupply7).mousedown(function (){
 });
 
 $(powersupply8).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1) {
@@ -232,6 +212,7 @@ $(powersupply8).mousedown(function (){
 });
 
 $(powersupply9).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1 && current2 <= 3) {
@@ -244,6 +225,7 @@ $(powersupply9).mousedown(function (){
     clearInterval(intervalID);
 });
 $(powersupply10).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1) {
@@ -259,6 +241,7 @@ $(powersupply10).mousedown(function (){
     clearInterval(intervalID);
 });
 $(powersupply11).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1 && voltage2 <= 30) {
@@ -271,6 +254,7 @@ $(powersupply11).mousedown(function (){
     clearInterval(intervalID);
 });
 $(powersupply12).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1) {
@@ -993,7 +977,7 @@ $("#container").mouseup(function (e) {
         AlligatorX1 = 0;
         AlligatorY1 = 0;
         // toggleAlligatorButton();
-        turnOffMode();
+        // turnOffMode();
     }
     if (deletemode == 1) {
         // console.log(delIni);

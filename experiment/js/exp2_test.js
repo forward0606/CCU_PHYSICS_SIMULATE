@@ -20,7 +20,6 @@ var pointarray = [];
 
 var current1 = 0, voltage1 = 0, current2 = 0, voltage2 = 0, power = 0, powersupplyOutputStatus = 0;
 
-var oneresistance = 0;
 
 var x1, x2, y1, y2, drawline = true;
 var AlligatorX1 = 0, AlligatorY1 = 0;
@@ -69,30 +68,6 @@ var generator_output_on = false;
 
 
 
-// 顯示或隱藏子選單
-function switchMenu(theMainMenu, theSubMenu, theEvent) {
-    var SubMenu = document.getElementById(theSubMenu);
-    if (SubMenu.style.display == 'none') { // 顯示子選單
-        SubMenu.style.minWidth = theMainMenu.clientWidth; // 讓子選單的最小寬度與主選單相同 (僅為了美觀)
-        SubMenu.style.display = 'block';
-        hideMenu(); // 隱藏子選單
-        VisibleMenu = theSubMenu;
-    }
-    else { // 隱藏子選單
-        if (theEvent != 'MouseOver' || VisibleMenu != theSubMenu) {
-            SubMenu.style.display = 'none';
-            VisibleMenu = '';
-        }
-    }
-}
-
-// 隱藏子選單
-function hideMenu() {
-    if (VisibleMenu != '') {
-        document.getElementById(VisibleMenu).style.display = 'none';
-    }
-    VisibleMenu = '';
-}
 
 function turnOffMode() {
     check();
@@ -381,7 +356,6 @@ $("#container").mouseup(function (e) {
             document.getElementById('svgline').appendChild(parseSVG('<polygon id=resistanceBox' + resistanceNo + ' points="' + rectX1 + ',' + rectY1 + ' ' + rectX2 + ',' + rectY2 + ' ' + rectX3 + ',' + rectY3 + ' ' + rectX4 + ',' + rectY4 + '" style="fill:blue; stroke:lime; stroke-width:1"><title>' + ohms + 'Ohms</title></polygon>'));
             linestack.push("resistance"+resistanceNo);
         }
-        oneresistance = 1;
         pointarray.push([x1, y1]);
         pointarray.push([x2, y2]);
         resistanceNo++;
@@ -593,7 +567,7 @@ $("#container").mouseup(function (e) {
         AlligatorX1 = 0;
         AlligatorY1 = 0;
         // toggleAlligatorButton();
-        turnOffMode();
+        // turnOffMode();
     }
     if (deletemode == 1) {
         //console.log(delIni);
@@ -612,6 +586,10 @@ $("#container").mouseup(function (e) {
         Things = $("line");
         for (var i = Things.length - 1; i >= 0; i--) {
             if (Things[i].x1.baseVal.value == x1 && Things[i].y1.baseVal.value == y1) {
+                if(Things[i].id.includes("persist")){
+                    alert("請勿刪除原有的元件");
+                    return;
+                }
                 for (let j = 0; j < pointarray.length; j++) {
                     if (Things[i].x1.baseVal.value == pointarray[j][0] && Things[i].y1.baseVal.value == pointarray[j][1]) {
                         // pointarray = deleteRow(pointarray, j);
@@ -637,7 +615,6 @@ $("#container").mouseup(function (e) {
                     $("#resistanceCircle2_" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
                     $("#resistanceBox" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
                     $("#" + Things[i].id).remove();
-                    oneresistance = 0;
                     resistanceOn = 1;
                 }
                 if (Things[i].id[0] == "i") {
@@ -665,6 +642,10 @@ $("#container").mouseup(function (e) {
                 return;
             }
             if (Things[i].x2.baseVal.value == x1 && Things[i].y2.baseVal.value == y1) {
+                if(Things[i].id.includes("persist")){
+                    alert("請勿刪除原有的元件");
+                    return;
+                }
                 for (let j = 0; j < pointarray.length; j++) {
                     if (Things[i].x1.baseVal.value == pointarray[j][0] && Things[i].y1.baseVal.value == pointarray[j][1]) {
                         // pointarray = deleteRow(pointarray, j);
@@ -687,7 +668,6 @@ $("#container").mouseup(function (e) {
                 }
 
                 if (Things[i].id[0] == "r") {
-                    oneresistance = 0;
                     resistanceOn = 1;
                     $("#resistanceCircle1_" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
                     $("#resistanceCircle2_" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
@@ -732,6 +712,10 @@ $("#container").mouseup(function (e) {
             y2 += 420;
             for (var i = Things.length - 1; i >= 0; i--) {
                 if (Things[i].x1.baseVal.value == x1 && Things[i].y1.baseVal.value == y1) {
+                    if(Things[i].id.includes("persist")){
+                        alert("請勿刪除原有的元件");
+                        return;
+                    }
                     for (let j = 0; j < pointarray.length; j++) {
                         if (Things[i].x1.baseVal.value == pointarray[j][0] && Things[i].y1.baseVal.value == pointarray[j][1]) {
                             // pointarray = deleteRow(pointarray, j);
@@ -867,7 +851,7 @@ $(document).ready(function () {
     context.lineTo(315, 50 * 11 - 5); // Set the path destination
     context.closePath(); // Close the path
     context.stroke(); // Outline the path
-
+    findPersistNode();
 });
 function toggleDelButton() {
     if (drawInductance == 1) {
@@ -984,7 +968,6 @@ function toggleWireButton() {
 };
 
 function toggleResistanceButton() {
-    if(oneresistance == 1) return;
     if (resistanceOn == 0) return;
     if (drawInductance == 1) {
         $this = $("#addInductance");
@@ -2277,7 +2260,7 @@ class Oscillator{
         }
         const labels = [];
         for(let i=0;i<(this._WAVE_DATA_COUNT);i++){
-            labels[i] = ((i + this._time_offset) * this._time_mul/300).toFixed(6);
+            labels[i] = i+1;
         }
         const data = {
             labels:labels,
@@ -2460,7 +2443,6 @@ function undo(){
     }
 
     if (linestack[target][0] == "r") {
-        oneresistance = 0;
         $("#resistanceCircle1_" + linestack[target][linestack[target].length - 2] + linestack[target][linestack[target].length - 1]).remove();
         $("#resistanceCircle2_" + linestack[target][linestack[target].length - 2] + linestack[target][linestack[target].length - 1]).remove();
         $("#resistanceBox" + linestack[target][linestack[target].length - 2] + linestack[target][linestack[target].length - 1]).remove();
@@ -2515,12 +2497,29 @@ function reload(){
 window.onbeforeunload = () => {
     return confirm('確定要離開?');
 }
-let id;
-let faradlist = [8e-6,8e-6,1e-7,1e-7]
-let henrylist = [0.02,0.01,0.02,0.01]
+
+function findPersistNode(){
+    let offsetX = 550;
+    let offsetY = 300;
+    var Things = $("line");
+    pointarray = [];
+    for (var i = 0; i < Things.length; i++) {
+        var x1 = Things[i].x1.baseVal.value;
+        var y1 = Things[i].y1.baseVal.value;
+        var x2 = Things[i].x2.baseVal.value;
+        var y2 = Things[i].y2.baseVal.value;
+        if(Things[i].id.includes("alligator")){
+            x2 -= offsetX;
+            y2 -= offsetY;
+        }
+        pointarray.push([x1, y1]);
+        pointarray.push([x2, y2]);
+    }
+}
+
 function start(){
     console.log("Starting");
-    osi.set_SWP(1);
+    osi.set_SWP(0.04 * (getRandomInteger(10) - 5) + 1);
     startbool = true;
     let date = new Date();
     let time = String(date.getFullYear()) + '/' + String(date.getMonth() + 1).padStart(2, '0') + '/' + String(date.getDate()).padStart(2, '0') + ' ' + String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0') + ':' + String(date.getSeconds()).padStart(2, '0');
@@ -2532,74 +2531,49 @@ function start(){
     $("#id1").css("display", "none");
     $("#class1").css("display", "none");
     $("#submitbuttom").css("display", "none");
-    id = parseInt($("#id1")[0].value,10);
-
-    let x1 = 225;
-    let y1 = 225;
-    let x2 = 205;
-    let y2 = 305;
-    let capacitanceNo = 3;
-    let ufarad = faradlist[id % 4];
-    var centerX = x1 - (x1 - x2) / 2;
-    var centerY = y1 - (y1 - y2) / 2;
-    var slope = Math.atan((y2 - y1) / (x2 - x1));
-    var rectX1 = centerX - 5 * Math.sin(slope) + 10 * Math.cos(slope);
-    var rectY1 = centerY + 5 * Math.cos(slope) + 10 * Math.sin(slope);
-    var rectX2 = centerX + 10 * Math.cos(slope) + 5 * Math.sin(slope);
-    var rectY2 = centerY + 10 * Math.sin(slope) - 5 * Math.cos(slope);
-    var rectX3 = centerX + 5 * Math.sin(slope) - 10 * Math.cos(slope);
-    var rectY3 = centerY - 5 * Math.cos(slope) - 10 * Math.sin(slope);
-    var rectX4 = centerX - 10 * Math.cos(slope) - 5 * Math.sin(slope);
-    var rectY4 = centerY - 10 * Math.sin(slope) + 5 * Math.cos(slope);
-    document.getElementById('svgline').appendChild(parseSVG('<circle id=capacitanceCircle1_0' + capacitanceNo + ' cx=' + x1 + ' cy=' + y1 + ' r=' + 5 + ' style="fill:' + colorlist[colorNo] + ';stroke-width:2"><title></title></line>'));
-    document.getElementById('svgline').appendChild(parseSVG('<circle id=capacitanceCircle2_0' + capacitanceNo + ' cx=' + x2 + ' cy=' + y2 + ' r=' + 5 + ' style="fill:' + colorlist[colorNo] + ';stroke-width:2"><title></title></line>'));
-    document.getElementById('svgline').appendChild(parseSVG('<line dataufarad="' + ufarad + '"id=capacitance0' + capacitanceNo + ' x1=' + x1 + ' y1=' + y1 + ' x2=' + x2 + ' y2=' + y2 + ' style="stroke:' + colorlist[colorNo] + ';stroke-width:2"><title>' + ufarad * 1e6 + 'uFarad</title></line>'));
-    document.getElementById('svgline').appendChild(parseSVG('<polygon id=capacitanceBox0' + capacitanceNo + ' points="' + rectX1 + ',' + rectY1 + ' ' + rectX2 + ',' + rectY2 + ' ' + rectX3 + ',' + rectY3 + ' ' + rectX4 + ',' + rectY4 + '" style="fill:rgb(255,0,0); stroke:black; stroke-width:1"><title>' + ufarad * 1e6 + 'uFarad</title></polygon>'));
-
-    
-    x1 = 205;
-    y1 = 125;
-    x2 = 205;
-    y2 = 225;
-    let henry = henrylist[id % 4];
-    let inductanceNo = 4;
-    var centerX = x1 - (x1 - x2) / 2;
-    var centerY = y1 - (y1 - y2) / 2;
-    var slope = Math.atan((y2 - y1) / (x2 - x1));
-    var rectX1 = centerX - 5 * Math.sin(slope) + 10 * Math.cos(slope);
-    var rectY1 = centerY + 5 * Math.cos(slope) + 10 * Math.sin(slope);
-    var rectX2 = centerX + 10 * Math.cos(slope) + 5 * Math.sin(slope);
-    var rectY2 = centerY + 10 * Math.sin(slope) - 5 * Math.cos(slope);
-    var rectX3 = centerX + 5 * Math.sin(slope) - 10 * Math.cos(slope);
-    var rectY3 = centerY - 5 * Math.cos(slope) - 10 * Math.sin(slope);
-    var rectX4 = centerX - 10 * Math.cos(slope) - 5 * Math.sin(slope);
-    var rectY4 = centerY - 10 * Math.sin(slope) + 5 * Math.cos(slope);
-    document.getElementById('svgline').appendChild(parseSVG('<circle id=inductanceCircle1_0' + inductanceNo + ' cx=' + x1 + ' cy=' + y1 + ' r=' + 5 + ' style="fill:' + colorlist[colorNo] + ';stroke-width:2"><title></title></line>'));
-    document.getElementById('svgline').appendChild(parseSVG('<circle id=inductanceCircle2_0' + inductanceNo + ' cx=' + x2 + ' cy=' + y2 + ' r=' + 5 + ' style="fill:' + colorlist[colorNo] + ';stroke-width:2"><title></title></line>'));
-    document.getElementById('svgline').appendChild(parseSVG('<line datahenry="' + henry + '"id=inductance0' + inductanceNo + ' x1=' + x1 + ' y1=' + y1 + ' x2=' + x2 + ' y2=' + y2 + ' style="stroke:' + colorlist[colorNo] + ';stroke-width:2"><title>' + henry + 'Henry</title></line>'));
-    document.getElementById('svgline').appendChild(parseSVG('<polygon id=inductanceBox0' + inductanceNo + ' points="' + rectX1 + ',' + rectY1 + ' ' + rectX2 + ',' + rectY2 + ' ' + rectX3 + ',' + rectY3 + ' ' + rectX4 + ',' + rectY4 + '" style="fill:rgb(255,215,0); stroke:black; stroke-width:1"><title>' + henry + 'Henry</title></polygon>'));
-    
-    generator_AMPL_base = 1;
+    let id = parseInt($("#id1")[0].value,10);
+    generator_AMPL_base = (id % 6) + 1;
     evaluate_generator_AMPL();
     generator_square();
-    generator_frequency_3();
-    generator_power();
-    osi.power_control();
-    vertical_mode_dual();
+    let mode = (id * 5) % 4;
+    if (mode == 1){
+        generator_frequency_2();
+    }
+    else if (mode == 2){
+        generator_frequency_3()
+    }
+    else if (mode == 3){
+        generator_frequency_4()
+    }
+    else{
+        generator_frequency_5()
+    }
+    findPersistNode();
     check();
 }
 
 function checkAns(){
     if(!startbool)return;
-    let answer = 2 * Math.sqrt(henrylist[id%4] / faradlist[id%4]);
+    let ans1 = parseFloat($("#ans1")[0].value);
+    let answer1 = generator_AMPL * 2;
+    let ans2 = parseFloat($("#ans2")[0].value);
+    let answer2 = generator_frequency;
     let done = true;
-    let resistances = getResistance();
-    let r = resistances[0].val;
-    if(r >= answer * 0.8 || abs(r - answer * 0.8) > answer * 0.3){
+    if(isNaN(ans1) || isNaN(ans2)){
+        done = false;
+    }
+    if(abs(ans1 - answer1) > answer1 * 0.01){
+        done = false;
+    }
+    if(abs(ans2 - answer2) > answer2 * 0.01){
         done = false;
     }
     if(done){
+        $("#anstext1").text($("#ans1")[0].value);
+        $("#anstext2").text($("#ans2")[0].value);
         $("#ansStatus").text("通過");
+        $("#ans1").css("display", "none");
+        $("#ans2").css("display", "none");
     }
     else{
         $("#ansStatus").text("錯誤");
@@ -2910,7 +2884,7 @@ function generator_drawline2() {
         document.onmousemove = drawDashedLine2();
     }
     if (deletemode) {
-        delALLalligator = [490, 400];
+        delALLalligator = [480, 400];
     }
 }
 v_outer_dis = [5,2,1,0.5,0.2,0.1,0.05,0.02,0.01];

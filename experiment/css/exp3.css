@@ -1,6 +1,7 @@
 body {
     background-color: #FFF5EB;
     padding: 0 10% 10% 10%;
+    height: 10px;
 }
 h1 {
     text-indent: 1em;
@@ -319,6 +320,12 @@ div#powersupply{
     width: 20px;
     background-color: #CCCCCC;
 }
+#power_choice_hint{
+    display: inline-block;
+    text-align: center;
+    border-style: solid;
+    padding: 7px;
+}
 .buttonInactive
 {
     background-color: white;
@@ -339,7 +346,7 @@ div#powersupply{
     width : 350px;
     height : 100px;
     left : 550px;
-    top : 150px;
+    top : 190px;
     z-index: 1;
 }
 #submitbuttom{

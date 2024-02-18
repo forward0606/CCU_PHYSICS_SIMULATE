@@ -33,30 +33,6 @@ const meter1_counterclockwise = document.querySelector("#multimeter1_2");
 
 var current1 = 0, voltage1 = 0, current2 = 0, voltage2 = 0, power = 0, powersupplyOutputStatus = 0;
 
-// 顯示或隱藏子選單
-function switchMenu(theMainMenu, theSubMenu, theEvent) {
-    var SubMenu = document.getElementById(theSubMenu);
-    if (SubMenu.style.display == 'none') { // 顯示子選單
-        SubMenu.style.minWidth = theMainMenu.clientWidth; // 讓子選單的最小寬度與主選單相同 (僅為了美觀)
-        SubMenu.style.display = 'block';
-        hideMenu(); // 隱藏子選單
-        VisibleMenu = theSubMenu;
-    }
-    else { // 隱藏子選單
-        if (theEvent != 'MouseOver' || VisibleMenu != theSubMenu) {
-            SubMenu.style.display = 'none';
-            VisibleMenu = '';
-        }
-    }
-}
-
-// 隱藏子選單
-function hideMenu() {
-    if (VisibleMenu != '') {
-        document.getElementById(VisibleMenu).style.display = 'none';
-    }
-    VisibleMenu = '';
-}
 
 document.getElementById("powersupply14").onclick = function () {
     if (deletemode == 1) {
@@ -109,6 +85,8 @@ document.getElementById("powersupply13").onclick = function () {
         powersupplyOutputStatus = 1;
         $("#powersupply13").css("background-color", "Lightgreen");
         console.log("output on!");
+        cur1.innerHTML = 0.00.toFixed(2);
+        cur2.innerHTML = 0.00.toFixed(2);
         check();
     } else {
         powersupplyOutputStatus = 0;
@@ -125,6 +103,7 @@ document.getElementById("powersupply13").onclick = function () {
 
 var intervalID;
 $(powersupply5).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval(function (){
         turnOffMode();
         if (power == 1 && current1 <= 3) {
@@ -139,6 +118,7 @@ $(powersupply5).mousedown(function (){
 });
 
 $(powersupply6).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1) {
@@ -155,6 +135,7 @@ $(powersupply6).mousedown(function (){
 });
 
 $(powersupply7).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
         turnOffMode();
         if (power == 1 && voltage1 <= 30) {
@@ -168,6 +149,7 @@ $(powersupply7).mousedown(function (){
 });
 
 $(powersupply8).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1) {
@@ -184,6 +166,7 @@ $(powersupply8).mousedown(function (){
 });
 
 $(powersupply9).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1 && current2 <= 3) {
@@ -196,6 +179,7 @@ $(powersupply9).mousedown(function (){
     clearInterval(intervalID);
 });
 $(powersupply10).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1) {
@@ -211,6 +195,7 @@ $(powersupply10).mousedown(function (){
     clearInterval(intervalID);
 });
 $(powersupply11).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1 && voltage2 <= 30) {
@@ -223,6 +208,7 @@ $(powersupply11).mousedown(function (){
     clearInterval(intervalID);
 });
 $(powersupply12).mousedown(function (){
+    if(!startbool) return;
     intervalID = setInterval( function (){
     turnOffMode();
     if (power == 1) {
@@ -384,6 +370,7 @@ power_drowline2.onmousedown = function (e) {
         delALLalligator = [1250, 545];
     }
 }
+
 power_drowline3.onmousedown = function (e) {
     alert("本實驗不開放使用這一組電功，請用左邊的電功");
     return;
@@ -443,6 +430,7 @@ meter1_drowline3.onmousedown = function (e) {
         delALLalligator = [205, 565];
     }
 }
+
 
 
 function approx_x(x) {
@@ -505,7 +493,7 @@ $("#container").mouseup(function (e) {
             alert('(請先點按鈕)please click button first');
             return;
         }
-        console.log(x2,y2);
+        
         if (x2 < 617 || x2 > 837 || y2 < 327 || y2 > 547) {
             if(((x2 == 577 && y2 == 427) || (x2 == 877 && y2 == 427)));
             else{
@@ -513,17 +501,28 @@ $("#container").mouseup(function (e) {
                 return;
             }
         }
-        console.log(x2);
+        
         if (findNodeNum(x1, y1) == 1 || findNodeNum(x1, y1) == 0) {
             if(x2 == 877 || x2 == 577) {}else {
                 alert('正負極只能接在左右兩個點');
                 return;
             }
         }
-        // if (x1 == x2 && y1 == y2) {
-        //     alert("(不能在同一點畫線)It is meaningless to insert both the ends of wire to the same point.");
-        //     return;
-        // }
+
+        for (let i = 0; i < pointarray.length; i++) {
+            if(pointarray[i][0] == 577 && pointarray[i][1] == 427){
+                // 負極可以接多個
+                continue;
+            }
+            if ((x1 == pointarray[i][0] && y1 == pointarray[i][1]) || (x2 == pointarray[i][0] && y2 == pointarray[i][1])) {
+                alert("(不能在同一點畫線)It is meaningless to insert two wire to the same point.");
+                return;
+            }
+        }
+        if (x1 == x2 && y1 == y2) {
+            alert("(不能在同一點畫線)It is meaningless to insert both the ends of wire to the same point.");
+            return;
+        }
         if (alligatorNo < 10) {
             document.getElementById('svgline2').appendChild(parseSVG('<circle id=alligatorCircle1_0' + alligatorNo + ' cx=' + x1 + ' cy=' + y1 + ' r=' + 5 + ' style="fill:' + colorlist[colorNo] + ';stroke-width:2"><title></title></line>'));
             document.getElementById('svgline2').appendChild(parseSVG('<circle id=alligatorCircle2_0' + alligatorNo + ' cx=' + x2 + ' cy=' + y2 + ' r=' + 5 + ' style="fill:' + colorlist[colorNo] + ';stroke-width:2"><title></title></line>'));
@@ -544,7 +543,7 @@ $("#container").mouseup(function (e) {
         AlligatorX1 = 0;
         AlligatorY1 = 0;
         // toggleAlligatorButton();
-        turnOffMode();
+        // turnOffMode();
     }
     if (deletemode == 1) {
         // console.log(delIni);
@@ -598,28 +597,12 @@ $("#container").mouseup(function (e) {
     check();
 });
 $(document).ready(function () {
-
     var canvas = $("#myCanvas");
     var context = canvas.get(0).getContext("2d");
     var current_x = 0;
     context.strokeStyle = "rgb(208, 208, 208)";
     context.fillStyle = "rgb(88, 88, 88)";
     current_x = 0;
-    // context.lineWidth = 3;
-    // context.strokeStyle = "red";
-    // context.beginPath(); // Start the path
-    // context.moveTo(15, 0); // Set the path origin
-    // context.lineTo(15, 270); // Set the path destination
-    // context.closePath(); // Close the path
-    // context.stroke(); // Outline the path
-
-    // context.strokeStyle = "black";
-    // context.beginPath(); // Start the path
-    // context.moveTo(75, 0); // Set the path origin
-    // context.lineTo(75, 50 * 11 - 5); // Set the path destination
-    // context.closePath(); // Close the path
-    // context.stroke(); // Outline the path
-
 
     for (var j = 0; j < 5; j++) {
 
@@ -651,15 +634,7 @@ $(document).ready(function () {
         context.fillRect(280, current_x, 10, 10);
     };
 
-    context.fillRect(20, 120, 10, 10);
-    context.fillRect(320, 120, 10, 10);
-    // context.lineWidth = 3;
-    // context.strokeStyle = "red";
-    // context.beginPath(); // Start the path
-    // context.moveTo(325, 0); // Set the path origin
-    // context.lineTo(325, 270); // Set the path destination
-    // context.closePath(); // Close the path
-    // context.stroke(); // Outline the path
+    zeroRed();
 
 });
 function toggleDelButton() {
@@ -893,10 +868,10 @@ function check() {
     //     return;
     // }
     
-    vol1.innerHTML = res.power1.voltage == "ERR" ? res.power1.voltage : res.power1.voltage.toFixed(2)
-    cur1.innerHTML = res.power1.current == "ERR" ? res.power1.current : res.power1.current.toFixed(2)
-    vol2.innerHTML = res.power2.voltage == "ERR" ? res.power2.voltage : res.power2.voltage.toFixed(2)
-    cur2.innerHTML = res.power2.current == "ERR" ? res.power2.current : res.power2.current.toFixed(2)
+    vol1.innerHTML = res.power1.voltage == "ERR" ? res.power1.voltage : res.power1.voltage.toFixed(2);
+    cur1.innerHTML = res.power1.current == "ERR" ? res.power1.current : 0.00.toFixed(2);
+    vol2.innerHTML = res.power2.voltage == "ERR" ? res.power2.voltage : res.power2.voltage.toFixed(2);
+    cur2.innerHTML = res.power2.current == "ERR" ? res.power2.current : 0.00.toFixed(2);
     if (meter1_mode == 0) {
         $("#multimeter1_3").text('');
     }
@@ -987,31 +962,57 @@ function show_error(s){
 const panel_mode = ["zeroRed", "oneRed", "twoRed"];
 var panel = panel_mode[0];
 
+
+
+
+// line in board(圓點、直線)
+function updateLine(fillColor, leftpos){
+    var canvas = $("#myCanvas");
+    var context = canvas.get(0).getContext("2d");
+    context.lineWidth = 4;
+    context.fillStyle = fillColor;
+    context.strokeStyle = fillColor;
+    context.beginPath(); // Start the path
+    context.moveTo(leftpos, 0); // Set the path origin
+    context.lineTo(leftpos, 270); // Set the path destination
+    context.closePath(); // Close the path
+    context.stroke(); // Outline the path
+}
+
+// circle in board(圓點、直線)
+function updateCircle(fillColor, leftpos){
+    var canvas = $("#myCanvas");
+    var context = canvas.get(0).getContext("2d");
+    context.fillStyle = fillColor;
+    context.strokeStyle = fillColor;
+    context.beginPath();
+    context.arc(leftpos, 125, 25, 0, 2 * Math.PI);
+    context.stroke();
+    context.fill();
+
+}
+
+//rectangle(正負極)
+function updateRectangle(){
+    var canvas = $("#myCanvas");
+    var context = canvas.get(0).getContext("2d");
+    context.fillStyle = "rgb(88, 88, 88)";
+    context.fillRect(20, 120, 10, 10);
+    context.fillRect(320, 120, 10, 10);
+}
+
 function zeroRed(){
     panel = panel_mode[0];
     $("#zeroRed").css('background-color', 'rosybrown');
     $("#oneRed").css('background-color', 'white');
     $("#twoRed").css('background-color', 'white');
-    var canvas = $("#myCanvas");
-    var context = canvas.get(0).getContext("2d");
-    var current_x = 0;
-    context.lineWidth = 4;
-    context.fillStyle = "#FFF5EB";
-    context.strokeStyle = "#FFF5EB";
-    context.beginPath(); // Start the path
-    context.moveTo(25, 0); // Set the path origin
-    context.lineTo(25, 270); // Set the path destination
-    context.closePath(); // Close the path
-    context.stroke(); // Outline the path
     
-    context.beginPath(); // Start the path
-    context.moveTo(325, 0); // Set the path origin
-    context.lineTo(325, 270); // Set the path destination
-    context.closePath(); // Close the path
-    context.stroke(); // Outline the path
-    context.fillStyle = "rgb(88, 88, 88)";
-    context.fillRect(20, 120, 10, 10);
-    context.fillRect(320, 120, 10, 10);
+    updateLine("#FFF5EB", 25);
+    updateLine("#FFF5EB", 325);
+    updateCircle("silver", 25);
+    updateCircle("silver", 325);
+    updateRectangle();
+    
 }
 
 function oneRed(){
@@ -1019,28 +1020,14 @@ function oneRed(){
     $("#zeroRed").css('background-color', 'white');
     $("#oneRed").css('background-color', 'rosybrown');
     $("#twoRed").css('background-color', 'white');
-    var canvas = $("#myCanvas");
-    var context = canvas.get(0).getContext("2d");
-    var current_x = 0;
-    context.lineWidth = 4;
-    context.fillStyle = "#FFF5EB";
-    context.strokeStyle = "#FFF5EB";
-    context.beginPath(); // Start the path
-    context.moveTo(25, 0); // Set the path origin
-    context.lineTo(25, 270); // Set the path destination
-    context.closePath(); // Close the path
-    context.stroke(); // Outline the path
     
-    context.fillStyle = "silver";
-    context.strokeStyle = "silver";
-    context.beginPath(); // Start the path
-    context.moveTo(325, 0); // Set the path origin
-    context.lineTo(325, 270); // Set the path destination
-    context.closePath(); // Close the path
-    context.stroke(); // Outline the path
-    context.fillStyle = "rgb(88, 88, 88)";
-    context.fillRect(20, 120, 10, 10);
-    context.fillRect(320, 120, 10, 10);
+    updateLine("#FFF5EB", 25);
+    updateCircle("#FFF5EB", 325);
+
+    updateCircle("silver", 25);
+    updateLine("silver", 325);
+
+    updateRectangle();
 }
 
 function twoRed(){
@@ -1048,28 +1035,13 @@ function twoRed(){
     $("#zeroRed").css('background-color', 'white');
     $("#oneRed").css('background-color', 'white');
     $("#twoRed").css('background-color', 'rosybrown');
-    var canvas = $("#myCanvas");
-    var context = canvas.get(0).getContext("2d");
-    var current_x = 0;
-    context.strokeStyle = "rgb(208, 208, 208)";
-    context.fillStyle = "rgb(88, 88, 88)";
-    current_x = 0;
-    context.lineWidth = 3;
-    context.strokeStyle = "silver";
-    context.beginPath(); // Start the path
-    context.moveTo(25, 0); // Set the path origin
-    context.lineTo(25, 270); // Set the path destination
-    context.closePath(); // Close the path
-    context.stroke(); // Outline the path
     
-    context.beginPath(); // Start the path
-    context.moveTo(325, 0); // Set the path origin
-    context.lineTo(325, 270); // Set the path destination
-    context.closePath(); // Close the path
-    context.stroke(); // Outline the path
-    context.fillStyle = "rgb(88, 88, 88)";
-    context.fillRect(20, 120, 10, 10);
-    context.fillRect(320, 120, 10, 10);
+    updateCircle("#FFF5EB", 25);
+    updateCircle("#FFF5EB", 325);
+    updateLine("silver", 25);
+    updateLine("silver", 325);
+
+    updateRectangle();
 }
 
 var p2p = [[0.3728953028909902,0.36852353115519765,0.3546851406881697,0.3286786761464262,0.28334487044193357,0.19783161987672473,0.0,0.2004878624837686,0.2888218786500252,0.33732043934089906,0.3670489722245846,0.3854431874730213,0.3955972168671084,0.39885348183498653],

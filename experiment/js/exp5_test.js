@@ -39,30 +39,6 @@ const meter2_counterclockwise = document.querySelector("#multimeter2_2");
 
 var current1 = 0, voltage1 = 0, current2 = 0, voltage2 = 0, power = 0, powersupplyOutputStatus = 0;
 
-// 顯示或隱藏子選單
-function switchMenu(theMainMenu, theSubMenu, theEvent) {
-    var SubMenu = document.getElementById(theSubMenu);
-    if (SubMenu.style.display == 'none') { // 顯示子選單
-        SubMenu.style.minWidth = theMainMenu.clientWidth; // 讓子選單的最小寬度與主選單相同 (僅為了美觀)
-        SubMenu.style.display = 'block';
-        hideMenu(); // 隱藏子選單
-        VisibleMenu = theSubMenu;
-    }
-    else { // 隱藏子選單
-        if (theEvent != 'MouseOver' || VisibleMenu != theSubMenu) {
-            SubMenu.style.display = 'none';
-            VisibleMenu = '';
-        }
-    }
-}
-
-// 隱藏子選單
-function hideMenu() {
-    if (VisibleMenu != '') {
-        document.getElementById(VisibleMenu).style.display = 'none';
-    }
-    VisibleMenu = '';
-}
 
 document.getElementById("powersupply14").onclick = function () {
     if (drawResistance == 1) {
@@ -117,10 +93,10 @@ document.getElementById("powersupply14").onclick = function () {
 
 function turnOffMode() {
     if (drawResistance == 1) {
-        //if (resistanceOn == 1) {
+        if (resistanceOn == 1) {
             $this = $("#addResistance");
             $this.css('background-color', 'white');
-        //}
+        }
         drawResistance = 0;
     }
     else if (deletemode == 1) {
@@ -172,6 +148,211 @@ document.getElementById("powersupply13").onclick = function () {
 
 
 var intervalID;
+$(powersupply5).mousedown(function (){
+    if(!startbool) return;
+    intervalID = setInterval(function (){
+        turnOffMode();
+        if (power == 1 && current1 <= 3) {
+            current1 += 0.01;
+            cur1.innerHTML = current1.toFixed(2);
+        }
+        check();
+        }, 200
+    );
+}).mouseup(function () {
+    clearInterval(intervalID);
+});
+
+$(powersupply6).mousedown(function (){
+    if(!startbool) return;
+    intervalID = setInterval( function (){
+    turnOffMode();
+    if (power == 1) {
+        current1 -= 0.01;
+        if (current1 < 0) {
+            current1 = 0;
+        }
+        cur1.innerHTML = current1.toFixed(2);
+    }
+    check();
+}, 200 );
+}).mouseup(function () {
+    clearInterval(intervalID);
+});
+
+$(powersupply7).mousedown(function (){
+    if(!startbool) return;
+    intervalID = setInterval( function (){
+        turnOffMode();
+        if (power == 1 && voltage1 <= 30) {
+            voltage1 += 0.1;
+            vol1.innerHTML = voltage1.toFixed(2);
+        }
+        check();
+    }, 200 );
+}).mouseup(function () {
+    clearInterval(intervalID);
+});
+
+$(powersupply8).mousedown(function (){
+    if(!startbool) return;
+    intervalID = setInterval( function (){
+    turnOffMode();
+    if (power == 1) {
+        voltage1 -= 0.1;
+        if (voltage1 < 0) {
+            voltage1 = 0;
+        }
+        vol1.innerHTML = voltage1.toFixed(2);
+    }
+    check();
+}, 200 );
+}).mouseup(function () {
+    clearInterval(intervalID);
+});
+
+$(powersupply9).mousedown(function (){
+    if(!startbool) return;
+    intervalID = setInterval( function (){
+    turnOffMode();
+    if (power == 1 && current2 <= 3) {
+        current2 += 0.01;
+        cur2.innerHTML = current2.toFixed(2);
+    }
+    check();
+}, 200 );
+}).mouseup(function () {
+    clearInterval(intervalID);
+});
+$(powersupply10).mousedown(function (){
+    if(!startbool) return;
+    intervalID = setInterval( function (){
+    turnOffMode();
+    if (power == 1) {
+        current2 -= 0.01;
+        if (current2 < 0) {
+            current2 = 0;
+        }
+        cur2.innerHTML = current2.toFixed(2);
+    }
+    check();
+}, 200 );
+}).mouseup(function () {
+    clearInterval(intervalID);
+});
+$(powersupply11).mousedown(function (){
+    if(!startbool) return;
+    intervalID = setInterval( function (){
+    turnOffMode();
+    if (power == 1 && voltage2 <= 30) {
+        voltage2 += 0.1;
+        vol2.innerHTML = voltage2.toFixed(2);
+    }
+    check();
+}, 200 );
+}).mouseup(function () {
+    clearInterval(intervalID);
+});
+$(powersupply12).mousedown(function (){
+    if(!startbool) return;
+    intervalID = setInterval( function (){
+    turnOffMode();
+    if (power == 1) {
+        voltage2 -= 0.1;
+        if (voltage2 < 0) {
+            voltage2 = 0;
+        }
+        vol2.innerHTML = voltage2.toFixed(2);
+    }
+    check();
+}, 200 );
+}).mouseup(function () {
+    clearInterval(intervalID);
+});
+
+addcurrent1.onclick = function () {
+    turnOffMode();
+    if (power == 1 && current1 <= 3) {
+        current1 += 0.01;
+        cur1.innerHTML = current1.toFixed(2);
+    }
+    check();
+}
+
+addvoltage1.onclick = function () {
+    turnOffMode();
+    if (power == 1 && voltage1 <= 30) {
+        voltage1 += 0.1;
+        vol1.innerHTML = voltage1.toFixed(2);
+    }
+    check();
+}
+
+addcurrent2.onclick = function () {
+    turnOffMode();
+    if (power == 1 && current2 <= 3) {
+        current2 += 0.01;
+        cur2.innerHTML = current2.toFixed(2);
+    }
+    check();
+}
+
+addvoltage2.onclick = function () {
+    turnOffMode();
+    if (power == 1 && current2 <= 30) {
+        voltage2 += 0.1;
+        vol2.innerHTML = voltage2.toFixed(2);
+    }
+    check();
+}
+
+deccurrent1.onclick = function () {
+    turnOffMode();
+    if (power == 1) {
+        current1 -= 0.01;
+        if (current1 < 0) {
+            current1 = 0;
+        }
+        cur1.innerHTML = current1.toFixed(2);
+    }
+    check();
+}
+
+decvoltage1.onclick = function () {
+    turnOffMode();
+    if (power == 1) {
+        voltage1 -= 0.1;
+        if (voltage1 < 0) {
+            voltage1 = 0;
+        }
+        vol1.innerHTML = voltage1.toFixed(2);
+    }
+    check();
+}
+
+deccurrent2.onclick = function () {
+    turnOffMode();
+    if (power == 1) {
+        current2 -= 0.01;
+        if (current2 < 0) {
+            current2 = 0;
+        }
+        cur2.innerHTML = current2.toFixed(2);
+    }
+    check();
+}
+
+decvoltage2.onclick = function () {
+    turnOffMode();
+    if (power == 1) {
+        voltage2 -= 0.1;
+        if (voltage2 < 0) {
+            voltage2 = 0;
+        }
+        vol2.innerHTML = voltage2.toFixed(2);
+    }
+    check();
+}
 
 
 
@@ -238,9 +419,9 @@ var drawCapacitance = 0;;
 var CapacitanceInitial;
 
 var chipNo = 1;
-var wireNo = 2;
+var wireNo = 1;
 var resistanceNo = 1;
-//var resistanceOn = 1;
+var resistanceOn = 1;
 var inductanceNo = 1;
 var alligatorNo = 1;
 var capacitanceNo = 1;
@@ -611,6 +792,9 @@ $("#container").mouseup(function (e) {
         pointarray.push([x1, y1]);
         pointarray.push([x2, y2]);
         resistanceNo++;
+        resistanceOn = 0;
+        $this = $("#addResistance");
+        $this.css('background-color', 'gray');
         colorNo = (colorNo + 1) % colorlist.length;
         turnOffMode();
     }
@@ -793,13 +977,11 @@ $("#container").mouseup(function (e) {
         AlligatorX1 = 0;
         AlligatorY1 = 0;
         // toggleAlligatorButton();
-        turnOffMode();
+        // turnOffMode();
     }
     if (deletemode == 1) {
-        // console.log(delIni);
 
         var delFin = e;
-        // console.log(delFin);
         x1 = approx_x(delIni.pageX);
         y1 = approx_x(delIni.pageY);
         x2 = approx_x(delFin.pageX);
@@ -812,6 +994,10 @@ $("#container").mouseup(function (e) {
         Things = $("line");
         for (var i = Things.length - 1; i >= 0; i--) {
             if (Things[i].x1.baseVal.value == x1 && Things[i].y1.baseVal.value == y1) {
+                if(Things[i].id.includes("persist")){
+                    alert("請勿刪除原有的元件");
+                    return;
+                }
                 for (let j = 0; j < pointarray.length; j++) {
                     if (Things[i].x1.baseVal.value == pointarray[j][0] && Things[i].y1.baseVal.value == pointarray[j][1]) {
                         // pointarray = deleteRow(pointarray, j);
@@ -836,6 +1022,9 @@ $("#container").mouseup(function (e) {
                     $("#resistanceCircle2_" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
                     $("#resistanceBox" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
                     $("#" + Things[i].id).remove();
+                    resistanceOn = 1;
+                    $this = $("#addResistance");
+                    $this.css('background-color', 'white');
                 }
                 if (Things[i].id[0] == "i") {
                     $("#inductanceCircle1_" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
@@ -858,6 +1047,10 @@ $("#container").mouseup(function (e) {
                 return;
             }
             if (Things[i].x2.baseVal.value == x1 && Things[i].y2.baseVal.value == y1) {
+                if(Things[i].id.includes("persist")){
+                    alert("請勿刪除原有的元件");
+                    return;
+                }
                 for (let j = 0; j < pointarray.length; j++) {
                     if (Things[i].x1.baseVal.value == pointarray[j][0] && Things[i].y1.baseVal.value == pointarray[j][1]) {
                         // pointarray = deleteRow(pointarray, j);
@@ -883,6 +1076,9 @@ $("#container").mouseup(function (e) {
                     $("#resistanceCircle2_" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
                     $("#resistanceBox" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
                     $("#" + Things[i].id).remove();
+                    resistanceOn = 1;
+                    $this = $("#addResistance");
+                    $this.css('background-color', 'white');
                 }
                 if (Things[i].id[0] == "i") {
                     $("#inductanceCircle1_" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
@@ -897,7 +1093,6 @@ $("#container").mouseup(function (e) {
                     $("#" + Things[i].id).remove();
                 }
                 if (Things[i].id[0] == "L") {
-                    //  console.log("#LEdcircle"+Things[i].id[Things[i].id.length -1]);
                     $("#LEdcircle" + Things[i].id[Things[i].id.length - 2] + Things[i].id[Things[i].id.length - 1]).remove();
                     $("#" + Things[i].id).remove();
 
@@ -915,6 +1110,10 @@ $("#container").mouseup(function (e) {
             console.log([x1, y1, x2, y2]);
             for (var i = Things.length - 1; i >= 0; i--) {
                 if (Things[i].x1.baseVal.value == x1 && Things[i].y1.baseVal.value == y1) {
+                    if(Things[i].id.includes("persist")){
+                        alert("請勿刪除原有的元件");
+                        return;
+                    }
                     for (let j = 0; j < pointarray.length; j++) {
                         if (Things[i].x1.baseVal.value == pointarray[j][0] && Things[i].y1.baseVal.value == pointarray[j][1]) {
                             // pointarray = deleteRow(pointarray, j);
@@ -927,7 +1126,6 @@ $("#container").mouseup(function (e) {
                             pointarray[j] = [0,0];
                         }
                     }
-                    // console.log(Things[i].id[0]);
                     pointarray.splice(jQuery.inArray([Things[i].x1.baseVal.value, Things[i].y1.baseVal.value], pointarray), 1);
                     pointarray.splice(jQuery.inArray([Things[i].x2.baseVal.value, Things[i].y2.baseVal.value], pointarray), 1);
                     if (Things[i].id[0] == "a") {
@@ -971,14 +1169,14 @@ $(document).ready(function () {
     current_x = 0;
     context.lineWidth = 3;
     context.strokeStyle = "red";
-    context.beginPath(); 
+    context.beginPath();
     context.moveTo(35, 0); // Set the path origin
     context.lineTo(35, 50 * 11 - 5); // Set the path destination
     context.closePath(); // Close the path
     context.stroke(); // Outline the path
 
     context.strokeStyle = "black";
-    context.beginPath(); 
+    context.beginPath();
     context.moveTo(75, 0); // Set the path origin
     context.lineTo(75, 50 * 11 - 5); // Set the path destination
     context.closePath(); // Close the path
@@ -996,7 +1194,7 @@ $(document).ready(function () {
 
     context.lineWidth = 3;
     context.strokeStyle = "blue";
-    context.beginPath(); 
+    context.beginPath();
     context.moveTo(175, 0); // Set the path origin
     context.lineTo(175, 50 * 11 - 5); // Set the path destination
     context.closePath(); // Close the path
@@ -1016,7 +1214,7 @@ $(document).ready(function () {
     current_x = 0;
     context.lineWidth = 3;
     context.strokeStyle = "black";
-    context.beginPath(); 
+    context.beginPath();
     context.moveTo(275, 0); // Set the path origin
     context.lineTo(275, 50 * 11 - 5); // Set the path destination
     context.closePath(); // Close the path
@@ -1044,12 +1242,12 @@ $(document).ready(function () {
 
     context.lineWidth = 3;
     context.strokeStyle = "red";
-    context.beginPath(); 
+    context.beginPath();
     context.moveTo(315, 0); // Set the path origin
     context.lineTo(315, 50 * 11 - 5); // Set the path destination
     context.closePath(); // Close the path
     context.stroke(); // Outline the path
-
+    findPersistNode();
 });
 function toggleDelButton() {
     if (drawInductance == 1) {
@@ -1165,7 +1363,7 @@ function toggleWireButton() {
 };
 
 function toggleResistanceButton() {
-    //if (resistanceOn == 0) return;
+    if (resistanceOn == 0) return;
     if (drawInductance == 1) {
         $this = $("#addInductance");
         $this.css('background-color', 'white');
@@ -1242,10 +1440,10 @@ function toggleInductanceButton() {
 };
 function toggleAlligatorButton() {
     if (drawResistance == 1) {
-        //if (resistanceOn == 1) {
+        if (resistanceOn == 1) {
             $this = $("#addResistance");
             $this.css('background-color', 'white');
-        //}
+        }
         drawResistance = 0;
     }
     else if (deletemode == 1) {
@@ -1338,9 +1536,6 @@ function getWires() {
             node2: findNodeNum(wire.x2.baseVal.value, wire.y2.baseVal.value)
         };
     });
-    for (let i = 0; i < wiresOut.length; i++) {
-        var wire = wiresOut[i];
-    }
     return wiresOut;
 }
 
@@ -1360,10 +1555,6 @@ function getAlligator() {
             node2: findNodeNum(alligator.x2.baseVal.value - offsetX, alligator.y2.baseVal.value - offsetY)
         };
     });
-    // for (let i = 0; i < alligatorOut.length; i++) {
-    //     var alligator = alligatorOut[i];
-    //     console.log(alligator.id, alligator.x1, alligator.y1, alligator.x2, alligator.y2);
-    // }
     return alligatorOut;
 }
 
@@ -1392,7 +1583,6 @@ function getResistance() {
         if (r.val == NaN) {
             alert("電阻不可以是小數")
         }
-        //console.log(resistance.id, resistance.x1, resistance.y1, resistance.x2, resistance.y2, resistance.val);
     }
     return resistanceOut;
 }
@@ -1505,6 +1695,7 @@ class GuassionElimination {
         }
 
         //after guassian elimination
+
         
         //檢查是不是無解
         for(let i=this.n;i<this.m;i++){
@@ -1598,7 +1789,7 @@ function getFullGraph(graph) {
     return { graph: graph, current_edgeid: curr_eid, voltage_edgeid: vol_eid };
 }
 
-function getFullGraphVoltageVoltage(check_answer) {
+function getFullGraphVoltageVoltage() {
     edge_cnt = 0;
     var graph = [];
     edge_list = [];
@@ -1617,20 +1808,6 @@ function getFullGraphVoltageVoltage(check_answer) {
     graph[2].push(e);
     graph[3].push(e);
 
-    if(check_answer){
-        // 算正解加的線
-        e = new Edge(51, 28, "wire", 0);
-        edge_list.push(e);
-        graph[51].push(e);
-        graph[28].push(e);
-
-        e = new Edge(28, 31, "wire", 0);
-        edge_list.push(e);
-        graph[28].push(e);
-        graph[31].push(e);
-    }
-
-
     return getFullGraph(graph);
 }
 
@@ -1643,6 +1820,7 @@ let path = [];
 //challenge : v0 不能給變數當電流，但連接時要當有連到
 function find_loop(goal, node, graph, loop_length) {
     if (loop_length != 0 && goal == node) {
+        //find loop
         equations[equation_cnt] = [];
         for (let j = 0; j <= edge_cnt; j++) {
             equations[equation_cnt][j] = 0;
@@ -1677,8 +1855,8 @@ function find_loop(goal, node, graph, loop_length) {
     }
 }
 
-function equationVoltageVoltage(check_answer) {
-    let FG = getFullGraphVoltageVoltage(check_answer);
+function equationVoltageVoltage() {
+    let FG = getFullGraphVoltageVoltage();
     graph = FG.graph;
     equations = [];
     equation_cnt = 0;
@@ -1755,36 +1933,8 @@ function checkResitanceBurn(x){
 }
 
 
-function get_question_answer() {
-    let FGx = equationVoltageVoltage(true);
-    let FG = FGx.FullGraph;
-    let x = FGx.ans;
-    let left = {voltage: 0, current: 0};
-    let right = {voltage: 0, current: 0};
-    let down = {voltage: 0, current: 0};
-    for(let i=0; i < edge_list.length;i++){
-        let e = edge_list[i];
-        if(e.type != "resistance"){
-            continue;
-        }
-        if(e.ohm == 100){
-            left.voltage = x[e.id] * e.ohm;
-            left.current = x[e.id];
-        }else if(e.ohm == 200){
-            right.voltage = x[e.id] * e.ohm;
-            right.current = x[e.id];
-        }else{
-            down.voltage = x[e.id] * e.ohm;
-            down.current = x[e.id];
-        }
-    }
-    return {left:left, right: right, down:down};
-}
-
-
-
 function checkCircuit() {
-    let FGx = equationVoltageVoltage(false);
+    let FGx = equationVoltageVoltage();
     let FG = FGx.FullGraph;
     let x = FGx.ans;
     if (abs(x[0]) <= current1.toFixed(2) && abs(x[1]) <= current2.toFixed(2)) {
@@ -1792,10 +1942,10 @@ function checkCircuit() {
         let res_meter = checkMeter(FG, x);
         let res_power1 = (res_meter.current == "ERR" ? res_meter : {voltage:voltage1, current:x[0]})
         let res_power2 = (res_meter.current == "ERR" ? res_meter : {voltage:voltage2, current:x[1]})
-        // if(checkResitanceBurn(x)){
-        //     let ERR = {voltage:"ERR", current:"ERR"}
-        //     return {meter:ERR, power1:ERR, power2:ERR};
-        // }
+        if(checkResitanceBurn(x)){
+            let ERR = {voltage:"ERR", current:"ERR"}
+            return {meter:ERR, power1:ERR, power2:ERR};
+        }
         return {meter : res_meter, power1 : res_power1, power2 : res_power2};
     }
 
@@ -1961,7 +2111,6 @@ function KeyPress(e) {
     if (evtobj.keyCode == 90 && evtobj.ctrlKey) undo();
     if (evtobj.keyCode == 65) toggleAlligatorButton();
     if (evtobj.keyCode == 68) toggleDelButton();
-    if (evtobj.keyCode == 87) toggleWireButton();
 }
 
 document.onkeydown = KeyPress;
@@ -1977,6 +2126,25 @@ function reload(){
 
 window.onbeforeunload = () => {
     return confirm('確定要離開?')
+}
+
+function findPersistNode(){
+    let offsetX = 550;
+    let offsetY = 300;
+    var Things = $("line");
+    pointarray = [];
+    for (var i = 0; i < Things.length; i++) {
+        var x1 = Things[i].x1.baseVal.value;
+        var y1 = Things[i].y1.baseVal.value;
+        var x2 = Things[i].x2.baseVal.value;
+        var y2 = Things[i].y2.baseVal.value;
+        if(Things[i].id.includes("alligator")){
+            x2 -= offsetX;
+            y2 -= offsetY;
+        }
+        pointarray.push([x1, y1]);
+        pointarray.push([x2, y2]);
+    }
 }
 
 var abc;
@@ -1997,45 +2165,45 @@ function start(){
     show_error("請別刪除已經存在的元件");
     let id = parseInt($("#id1")[0].value,10);
     id %= 100;
-    power = 1;
     let ohms = (id / 4) * 13 + 50;
-    current1 = 0.1;
-    voltage1 = (id / 2 + 50) / 10;
-    cur1.innerHTML = current1.toFixed(2);
-    vol1.innerHTML = voltage1.toFixed(2);
-    current2 = 0.1;
-    voltage2 = (id / 2 + 100) / 10;
-    cur2.innerHTML = current2.toFixed(2);
-    vol2.innerHTML = voltage2.toFixed(2);
-    student_pre_test_ans = get_question_answer();
+    abc = ohms;
+    let x1 = 225;
+    let y1 = 125;
+    let x2 = 225;
+    let y2 = 185;
+    let centerX = x1 - (x1 - x2) / 2;
+    let centerY = y1 - (y1 - y2) / 2;
+    let slope = Math.atan((y2 - y1) / (x2 - x1));
+    let rectX1 = centerX - 5 * Math.sin(slope) + 10 * Math.cos(slope);
+    let rectY1 = centerY + 5 * Math.cos(slope) + 10 * Math.sin(slope);
+    let rectX2 = centerX + 10 * Math.cos(slope) + 5 * Math.sin(slope);
+    let rectY2 = centerY + 10 * Math.sin(slope) - 5 * Math.cos(slope);
+    let rectX3 = centerX + 5 * Math.sin(slope) - 10 * Math.cos(slope);
+    let rectY3 = centerY - 5 * Math.cos(slope) - 10 * Math.sin(slope);
+    let rectX4 = centerX - 10 * Math.cos(slope) - 5 * Math.sin(slope);
+    let rectY4 = centerY - 10 * Math.sin(slope) + 5 * Math.cos(slope);
+    let resistanceNo = 2;
+    document.getElementById('svgline').appendChild(parseSVG('<circle id=resistanceCircle1_0' + resistanceNo + '_persist cx=' + x1 + ' cy=' + y1 + ' r=' + 5 + ' style="fill:' + colorlist[colorNo] + ';stroke-width:2"><title></title></line>'));
+    document.getElementById('svgline').appendChild(parseSVG('<circle id=resistanceCircle2_0' + resistanceNo + '_persist cx=' + x2 + ' cy=' + y2 + ' r=' + 5 + ' style="fill:' + colorlist[colorNo] + ';stroke-width:2"><title></title></line>'));
+    document.getElementById('svgline').appendChild(parseSVG('<line dataohm="' + ohms + '"id=resistance0' + resistanceNo + '_persist x1=' + x1 + ' y1=' + y1 + ' x2=' + x2 + ' y2=' + y2 + ' style="stroke:' + colorlist[colorNo] + ';stroke-width:2"><title>電阻 B</title></line>'));
+    document.getElementById('svgline').appendChild(parseSVG('<polygon id=resistanceBox0' + resistanceNo + '_persist points="' + rectX1 + ',' + rectY1 + ' ' + rectX2 + ',' + rectY2 + ' ' + rectX3 + ',' + rectY3 + ' ' + rectX4 + ',' + rectY4 + '" style="fill:blue; stroke:lime; stroke-width:1"><title>電阻 B</title></polygon>'));
+    findPersistNode();
 }
-
-var student_pre_test_ans;
-
-function checkEqual(a, b){
-    console.log(a,b);
-    if(isNaN(a) || isNaN(b))    return false;
-    console.log(abs(a-b),b*0.1);
-    return abs(a - b) < b * 0.1;
-}
-
 function checkAns(){
     if(!startbool)return;
     let ans1 = parseFloat($("#ans1")[0].value);
-    let ans2 = parseFloat($("#ans2")[0].value);
-    let ans3 = parseFloat($("#ans3")[0].value) * 0.001;
+    let answer1 = abc;
     let done = true;
-    done = done && checkEqual(ans1, abs(student_pre_test_ans.right.voltage.toFixed(2)));
-    done = done && checkEqual(ans2, abs(student_pre_test_ans.left.voltage.toFixed(2)));
-    done = done && checkEqual(ans3, student_pre_test_ans.down.current.toFixed(5)); 
+    if(isNaN(ans1)){
+        done = false;
+    }
+    if(abs(ans1 - answer1) > 10){
+        done = false;
+    }
     if(done){
         $("#anstext1").text($("#ans1")[0].value);
-        $("#anstext2").text($("#ans2")[0].value);
-        $("#anstext3").text($("#ans3")[0].value);
         $("#ansStatus").text("通過");
         $("#ans1").css("display", "none");
-        $("#ans2").css("display", "none");
-        $("#ans3").css("display", "none");
     }
     else{
         $("#ansStatus").text("錯誤");

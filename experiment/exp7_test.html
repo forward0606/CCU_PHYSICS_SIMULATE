@@ -5,25 +5,68 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>測驗十一：RLC交流電路</title>
+    <title>測驗七：RC直流電路</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/exp11-2.css">
+    <link rel="stylesheet" href="css/exp7_test.css">
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/jquery.bgiframe.js"></script>
     <link rel="stylesheet" href="css/jquery-ui.css" />
     <script src="js/chart.js"></script>
     <script src="js/math.js"></script>
+    <script src="js/menu.js"></script>
 </head>
 
 <body>
     <!-- <video autoplay id="camera"></video> -->
     <video autoplay id="camera"></video>
-    <svg id="svgline2" xmlns="http://www.w3.org/2000/svg" version="1.1" width="1500px" height="1000px"
-        style="left: 0px; top: 0px; position:absolute"></svg>
+    <svg id="svgline2" xmlns="http://www.w3.org/2000/svg" version="1.1" width="1500px" height="1000px" style="left: 0px; top: 0px; position:absolute">
+        <circle id="alligatorCircle1_01_persist" cx="430" cy="400" r="5" style="fill:Red;stroke-width:2">
+            <title></title>
+        </circle>
+        <circle id="alligatorCircle2_01_persist" cx="365" cy="445" r="5" style="fill:Red;stroke-width:2">
+            <title></title>
+        </circle>
+        <line id="alligator01_persist" x1="430" y1="400" x2="365" y2="445" style="stroke:Red;stroke-width:5px;"></line>
+        <circle id="alligatorCircle1_02_persist" cx="480" cy="400" r="5" style="fill:Black;stroke-width:2">
+            <title></title>
+        </circle>
+        <circle id="alligatorCircle2_02_persist" cx="405" cy="445" r="5" style="fill:Black;stroke-width:2">
+            <title></title>
+        </circle>
+        <line id="alligator02_persist" x1="480" y1="400" x2="405" y2="445" style="stroke:Black;stroke-width:5px;"></line>
+        <circle id="alligatorCircle1_03_persist" cx="1020" cy="530" r="5" style="fill:Red;stroke-width:2">
+            <title></title>
+        </circle>
+        <circle id="alligatorCircle2_03_persist" cx="345" cy="445" r="5" style="fill:Red;stroke-width:2">
+            <title></title>
+        </circle>
+        <line id="alligator03_persist" x1="1020" y1="530" x2="345" y2="445" style="stroke:Red;stroke-width:5px;"></line>
+        <circle id="alligatorCircle1_04_persist" cx="1070" cy="530" r="5" style="fill:Black;stroke-width:2">
+            <title></title>
+        </circle>
+        <circle id="alligatorCircle2_04_persist" cx="405" cy="525" r="5" style="fill:Black;stroke-width:2">
+            <title></title>
+        </circle>
+        <line id="alligator04_persist" x1="1070" y1="530" x2="405" y2="525" style="stroke:Black;stroke-width:5px;"></line>
+        <circle id="alligatorCircle1_05_persist" cx="1350" cy="530" r="5" style="fill:Red;stroke-width:2">
+            <title></title>
+        </circle>
+        <circle id="alligatorCircle2_05_persist" cx="345" cy="545" r="5" style="fill:Red;stroke-width:2">
+            <title></title>
+        </circle>
+        <line id="alligator05_persist" x1="1350" y1="530" x2="345" y2="545" style="stroke:Red;stroke-width:5px;"></line>
+        <circle id="alligatorCircle1_06_persist" cx="1390" cy="530" r="5" style="fill:Black;stroke-width:2">
+            <title></title>
+        </circle>
+        <circle id="alligatorCircle2_06_persist" cx="405" cy="605" r="5" style="fill:Black;stroke-width:2">
+            <title></title>
+        </circle>
+        <line id="alligator06_persist" x1="1390" y1="530" x2="405" y2="605" style="stroke:Black;stroke-width:5px;"></line>
+    </svg>
         <h1>
-            <a href="../canvas.html" target="_self">國立中正大學普通物理實驗學習平台</a>
-            <span class="main-menu" onclick="switchMenu( this, 'SubMenu1' )">實驗(Click) <span
+            <a href="index.html" target="_self">國立中正大學普通物理實驗學習平台</a>
+            <span class="main-menu" id="menu1" onclick="switchMenu( this, 'SubMenu1' )">實驗(Click) <span
                     style="font-size:9px;">&#9660;</span>
                 <ul id="SubMenu1" class="sub-menu" style="display:none;">
                     <li><a href="exp3.html" target="_self">實驗三：等電位實驗</a></li>
@@ -36,28 +79,49 @@
                     <li><a href="exp11.html" target="_self">實驗十一：RLC交流電路</a></li>
                 </ul>
             </span>
-            <span class="main-menu" onclick="switchMenu( this, 'SubMenu2' )">測驗(Click) <span
+            <span class="main-menu" id="menu2" onclick="switchMenu( this, 'SubMenu2' )">測驗(Click) <span
                 style="font-size:9px;">&#9660;</span>
                 <ul id="SubMenu2" class="sub-menu" style="display:none;">
-                    <li><a href="exp3-2.html" target="_self">測驗三：等電位實驗</a></li>
-                    <li><a href="exp5-2.html" target="_self">測驗五：歐姆定律測驗</a></li>
-                    <li><a href="exp6-2.html" target="_self">測驗六：克希荷夫</a></li>
-                    <li><a href="exp2-2.html" target="_self">測驗二：示波器與波形產生器教學</a></li>
-                    <li><a href="exp7-2.html" target="_self">測驗七：RC直流電路</a></li>
-                    <li><a href="exp8-2.html" target="_self">測驗八：磁力測驗</a></li>
-                    <li><a href="exp10-2.html" target="_self">測驗十：RLC直流電路</a></li>
-                    <li><a href="exp11-2.html" target="_self">測驗十一：RLC交流電路</a></li>
+                    <li><a href="exp3_test.html" target="_self">測驗三：等電位實驗</a></li>
+                    <li><a href="exp5_test.html" target="_self">測驗五：歐姆定律測驗</a></li>
+                    <li><a href="exp6_test.html" target="_self">測驗六：克希荷夫</a></li>
+                    <li><a href="exp2_test.html" target="_self">測驗二：示波器與波形產生器教學</a></li>
+                    <li><a href="exp7_test.html" target="_self">測驗七：RC直流電路</a></li>
+                    <li><a href="exp8_test.html" target="_self">測驗八：磁力測驗</a></li>
+                    <li><a href="exp10_test.html" target="_self">測驗十：RLC直流電路</a></li>
+                    <li><a href="exp11_test.html" target="_self">測驗十一：RLC交流電路</a></li>
                 </ul>
             </span>
         </h1>
     <h2>
-        我的課程 / 普通物理實驗 / 測驗十一：RLC交流電路
+        我的課程 / 普通物理實驗 / 測驗七：RC直流電路
     </h2>
     <div id="container" style="position: absolute; left: 0px; top: 150px; z-index: 0; height: 600px;">
         <canvas id="myCanvas" width="500" height="360"
             style="position: relative; left: 100px; top: 270px; z-index: 0; float: left;"></canvas>
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500px" height="360px"
-            style="left: 100px; top: 270px; z-index:0; position:absolute" id="svgline"></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500px" height="360px" style="left: 100px; top: 270px; z-index:0; position:absolute" id="svgline">
+                <circle id="resistanceCircle1_01_persist" cx="225" cy="25" r="5" style="fill:Indigo;stroke-width:2">
+                    <title></title>
+                </circle>
+                <circle id="resistanceCircle2_01_persist" cx="225" cy="125" r="5" style="fill:Indigo;stroke-width:2">
+                    <title></title>
+                </circle>
+                <line dataohm="10000" id="resistance01_persist" x1="225" y1="25" x2="225" y2="125" style="stroke:Indigo;stroke-width:2">
+                    <title>10000Ohms</title>
+                </line>
+                <polygon id="resistanceBox01_persist" points="220,85 230,85 230,65 220,65" style="fill:blue; stroke:lime; stroke-width:1">
+                    <title>10000Ohms</title>
+                </polygon>
+                <circle id="wireCircle1_01_persist" cx="265" cy="225" r="5" style="fill:Black;stroke-width:2">
+                    <title></title>
+                </circle>
+                <circle id="wireCircle2_01_persist" cx="305" cy="225" r="5" style="fill:Black;stroke-width:2">
+                    <title></title>
+                </circle>
+                <line id="wire01_persist" x1="265" y1="225" x2="305" y2="225" style="stroke:Black;stroke-width:2">
+                    <title></title>
+                </line>
+            </svg>
         <div id="oscilloscope" class="oscilloscope-bg00">
             <div id="oscilloscopeScreen">
                 <canvas id="oscilloscopeScreenCanvas"></canvas>
@@ -136,24 +200,14 @@
             <p id="generator_frequency" class="generator-text">1</p>
             <p id="generator_frequency_menu" class="generator-text"></p>
             <button id="generator_power" type="button" class="generator-button" onclick="generator_power()"></button>
-            <button id="generator_frequency6" type="button" class="generator-button" onclick="generator_frequency_6()"></button>
-            <button id="generator_frequency5" type="button" class="generator-button" onclick="generator_frequency_5()"></button>
-            <button id="generator_frequency4" type="button" class="generator-button" onclick="generator_frequency_4()"></button>
-            <button id="generator_frequency3" type="button" class="generator-button" onclick="generator_frequency_3()"></button>
-            <button id="generator_frequency2" type="button" class="generator-button" onclick="generator_frequency_2()"></button>
-            <button id="generator_frequency1" type="button" class="generator-button" onclick="generator_frequency_1()"></button>
-            <button id="generator_frequency0" type="button" class="generator-button" onclick="generator_frequency_0()"></button>
             <p id="generator_inv_text" class="generator-text">inv</p>
             <button id="generator_inv" type="button" class="generator-button" onclick="generator_inv()"></button>
             <p id="generator_wave_text" class="generator-text"></p>
-            <!-- <button id="generator_square" type="button" class="generator-button" onclick="generator_square()"></button>
-            <button id="generator_triangle" type="button" class="generator-button" onclick="generator_triangle()"></button>
-            <button id="generator_sin" type="button" class="generator-button" onclick="generator_sin()"></button> -->
             <p id="generator_AMPL1_text" class="generator-text">-20dB</p>
             <button id="generator_AMPL1" type="button" class="generator-button" onclick="generator_AMPL1()"></button>
             <p id="generator_duty_text" class="generator-text">DUTY</p>
-            <button id="minus_generator_duty" type="button" class="generator-button" onclick="minus_generator_duty()">＜</button>
-            <button id="add_generator_duty" type="button" class="generator-button" onclick="add_generator_duty()">＞</button>
+            <!-- <button id="minus_generator_duty" type="button" class="generator-button" onclick="minus_generator_duty()">＜</button>
+            <button id="add_generator_duty" type="button" class="generator-button" onclick="add_generator_duty()">＞</button> -->
             <p id="generator_offset_text" class="generator-text">OFFSET</p>
             <button id="generator_offset_switch" type="button" class="generator-button" onclick="wg.set_offset_on(true)"></button>
             <button id="minus_generator_offset" type="button" class="generator-button" onclick="minus_generator_offset()">＜</button>
@@ -171,14 +225,6 @@
 
         </div>
     </div>
-    <button type="button" class="buttonInactive" id="addWire" href="#" onclick="toggleWireButton()">Add
-        Wire(單芯線)</button>
-    <button type="button" class="buttonInactive" id="addResistance" href="#" onclick="toggleResistanceButton()">Add
-        Resistor(電阻)</button>
-    <button type="button" class="buttonInactive" id="addAlligator" href="#" onclick="toggleAlligatorButton()">Add
-        Alligator Clip(鱷魚夾)</button>
-    <button type="button" class="buttonInactive" id="undo" href="#" onclick="undo()">Undo(返回上一步)</button>
-    <button type="button" class="buttonInactive" id="del" href="#" onclick="toggleDelButton()">Delete Mode(刪除)</button>
     <a href="exp7_menu.html">使用手冊</a>
     <!-- target="_blank" -->
     
@@ -194,8 +240,8 @@
         <input type="buttom" id="submitbuttom" value="確認" readonly="readonly" onclick="start()"></input><br>
     </form>
     <form id="form2">
-        請回答以下問題(容許誤差為3%)<br>
-        |Vr/Vin|最大值發生在頻率(Hz):<input class="input" value="" id="ans1"></input><a id="anstext1"></a><br>
+        請回答以下問題<br>
+        半衰期(s):<input class="input" value="" id="ans1"></input><a id="anstext1"></a><br>
         <input type="buttom" id="submitAnswerbuttom" value="提交" readonly="readonly" onclick="checkAns()"><a id="ansStatus"></a></input><br>
     </form>
     <form class="demo_wave" id="demo_wave1">
@@ -210,7 +256,7 @@
         <input type="buttom" id="checkCircuitbutton" value="檢查電路" readonly="readonly" onclick="check()"></input><br>
     </form>
 
-    <script type="text/javascript" src="js\exp11-2.js"></script>
+    <script type="text/javascript" src="js\exp7_test.js"></script>
 </body>
 
 </html>

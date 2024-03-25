@@ -147,7 +147,6 @@ function clickOutput() {
 }
 
 
-var intervalID;
 
 
 
@@ -1982,6 +1981,14 @@ function findPersistNode(){
 
 function start(){
     console.log("Starting");
+    
+    // check id input
+    let id = parseInt($("#id1")[0].value,10);
+    if(isNaN(id)){
+        alert("學號輸入錯誤。\nStudent Id number error.");
+        return;
+    }
+    
     startbool = true;
     let date = new Date();
     let time = String(date.getFullYear()) + '/' + String(date.getMonth() + 1).padStart(2, '0') + '/' + String(date.getDate()).padStart(2, '0') + ' ' + String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0') + ':' + String(date.getSeconds()).padStart(2, '0');
@@ -1994,7 +2001,7 @@ function start(){
     $("#class1").css("display", "none");
     $("#submitbuttom").css("display", "none");
     show_error("請別刪除已經存在的元件");
-    let id = parseInt($("#id1")[0].value,10);
+    
     id %= 100;
     power = 1;
     let ohms = (id / 4) * 13 + 50;
@@ -2025,9 +2032,9 @@ function checkAns(){
     let ans2 = parseFloat($("#ans2")[0].value);
     let ans3 = parseFloat($("#ans3")[0].value) * 0.001;
     let done = true;
-    done = done && checkEqual(ans1, abs(student_pre_test_ans.right.voltage.toFixed(2)));
-    done = done && checkEqual(ans2, abs(student_pre_test_ans.left.voltage.toFixed(2)));
-    done = done && checkEqual(ans3, student_pre_test_ans.down.current.toFixed(5)); 
+    done = done && checkEqual(abs(ans1), abs(student_pre_test_ans.right.voltage.toFixed(2)));
+    done = done && checkEqual(abs(ans2), abs(student_pre_test_ans.left.voltage.toFixed(2)));
+    done = done && checkEqual(abs(ans3), student_pre_test_ans.down.current.toFixed(5)); 
     if(done){
         $("#anstext1").text($("#ans1")[0].value);
         $("#anstext2").text($("#ans2")[0].value);

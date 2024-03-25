@@ -42,9 +42,6 @@ function turnOffMode() {
 }
 
 
-var intervalID;
-
-
 meter1_clockwise.onclick = function () {
     turnOffMode();
     let last_mode = meter1_mode;
@@ -185,11 +182,20 @@ function drawDashedLine2() {
         if (mode) {
             if ($("#dashline").length > 0) {
                 $("#dashline").remove();
-                document.getElementById('svgline2').appendChild(parseSVG('<line id=dashline x1=' + AlligatorX1 + ' y1=' + AlligatorY1 + ' x2=' + x2 + ' y2=' + y2 + ' " style="stroke:' + colorlist[colorNo] + ' ;stroke-width:5px;" stroke-dasharray="5"></line>'));
             }
-            else {
-                document.getElementById('svgline2').appendChild(parseSVG('<line id=dashline x1=' + AlligatorX1 + ' y1=' + AlligatorY1 + ' x2=' + x2 + ' y2=' + y2 + ' " style="stroke:' + colorlist[colorNo] + ' ;stroke-width:5px;" stroke-dasharray="5"></line>'));
+            if ($("#vertical_dashline").length > 0) {
+                $("#vertical_dashline").remove();
             }
+            if ($("#horizental_dashline").length > 0) {
+                $("#horizental_dashline").remove();
+            }
+            document.getElementById('svgline2').appendChild(parseSVG('<line id=dashline x1=' + AlligatorX1 + ' y1=' + AlligatorY1 + ' x2=' + x2 + ' y2=' + y2 + ' " style="stroke:' + colorlist[colorNo] + ' ;stroke-width:5px;" stroke-dasharray="5"></line>'));
+            let offsetX = 550;
+            let offsetY = 300;
+            tmpx = x2 - offsetX;
+            tmpy = y2 - offsetY;
+            document.getElementById('svgline').appendChild(parseSVG('<line id=vertical_dashline x1=' + tmpx + ' y1=' + 0 + ' x2=' + tmpx + ' y2=' + 280 + ' " style="stroke:' + colorlist[colorNo] + ' ;stroke-width:10px;" stroke-opacity="0.3"></line>'));
+            document.getElementById('svgline').appendChild(parseSVG('<line id=horizental_dashline x1=' + 0 + ' y1=' + tmpy + ' x2=' + 400 + ' y2=' + tmpy + ' " style="stroke:' + colorlist[colorNo] + ' ;stroke-width:10px;" stroke-opacity="0.3"></line>'));
         }   
     }
     return draw;
@@ -212,6 +218,8 @@ function deleteRow(arr, row) {
 
 $("#container").mouseup(function (e) {
     $("#dashline").remove();
+    $("#vertical_dashline").remove();
+    $("#horizental_dashline").remove();
     document.onmousemove = null;
     if (drawAlligator == 1) {
         var AlligatorFinal = e;
@@ -678,6 +686,14 @@ window.onbeforeunload = () => {
 
 function start(){
     console.log("Starting");
+    
+    // check id input
+    let id = parseInt($("#id1")[0].value,10);
+    if(isNaN(id)){
+        alert("學號輸入錯誤。\nStudent Id number error.");
+        return;
+    }
+    
     startbool = true;
     let date = new Date();
     let time = String(date.getFullYear()) + '/' + String(date.getMonth() + 1).padStart(2, '0') + '/' + String(date.getDate()).padStart(2, '0') + ' ' + String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0') + ':' + String(date.getSeconds()).padStart(2, '0');
@@ -690,9 +706,9 @@ function start(){
     $("#class1").css("display", "none");
     $("#submitbuttom").css("display", "none");
     $("#powersupply13").css("background-color", "Lightgreen");
+    
     power = 1;
     powersupplyOutputStatus = 1;
-    let id = parseInt($("#id1")[0].value,10);
     id %= 100;
     current1 = 0.1;
     voltage1 = (id / 2 + 50) / 10;
@@ -712,7 +728,6 @@ function checkAns(){
     let ans1 = parseFloat($("#ans1")[0].value);
     let ans2 = parseFloat($("#ans2")[0].value);
     let ans3 = parseFloat($("#ans3")[0].value);
-    move();
     // zeroRed
     let answer1 = (voltage1 * p2p[4][9]);
     let answer2 = (voltage1 * p2p[6][9]);
@@ -927,27 +942,6 @@ function gotLocalMediaStream(mediaStream) {
     } else {
         // Avoid using this in new browsers, as it is going away.
         localVideo.src = window.URL.createObjectURL(localStream);
-    }
-}
-
-
-var progress_bar_i = 0;
-function move() {
-    if (progress_bar_i == 0) {
-        progress_bar_i = 1;
-        var elem = document.getElementById("myBar");
-        var width = 0;
-        var id = setInterval(frame, 10);
-        function frame() {
-            if (width >= 100) {
-                clearInterval(id);
-                progress_bar_i = 0;
-                elem.style.width = "0%";
-            } else {
-                width++;
-                elem.style.width = width + "%";
-            }
-        }
     }
 }
 

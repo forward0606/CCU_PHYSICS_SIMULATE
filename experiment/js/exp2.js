@@ -2,6 +2,7 @@
 var VisibleMenu = ''; // 記錄目前顯示的子選單的 ID
 
 var startbool = false;
+var readybool = false;
 
 var meter1_mode = 0;
 var meter2_mode = 0;
@@ -49,19 +50,7 @@ var delIni;
 
 var meter2On = 0;
 
-var generator_frequency = 1; // 1 * 10 ^ 2
-var generator_frequency1 = 1;
-var generator_frequency2 = 1;
-var generator_power_on = false;
-var wave_type;
-var generator_inv_on = false;
-var generator_AMPL1_on = false;
 var generator_duty = 0.5;
-var generator_offset = 0;
-var generator_AMPL2_on = false;
-var generator_AMPL = 1; // 1 * 10 ^ 0
-var generator_AMPL_base = 0; 
-var generator_AMPL_pow = 0;
 var generator_output_on = false;
 
 
@@ -514,7 +503,7 @@ $("#container").mouseup(function (e) {
             }
         }
         if (x1 == 0 || y1 == 0) {
-            alert('(請先點按鈕)please click button first');
+            // alert('(請先點按鈕)please click button first');
             return;
         }
         // console.log(x2,y2);
@@ -633,7 +622,6 @@ $("#container").mouseup(function (e) {
 
                 }
                 check();
-                turnOffMode();
                 return;
             }
             if (Things[i].x2.baseVal.value == x1 && Things[i].y2.baseVal.value == y1) {
@@ -686,7 +674,6 @@ $("#container").mouseup(function (e) {
 
                 }
                 check();
-                turnOffMode();
                 return;
             }
         }
@@ -724,17 +711,15 @@ $("#container").mouseup(function (e) {
                         delALLalligator = null;
                     }
                     check();
-                    turnOffMode();
                     return;
                 }
             }
         }
     }
     //console.log(pointarray);
-    // check();
+    check();
 });
 $(document).ready(function () {
-
     var canvas = $("#myCanvas");
     var context = canvas.get(0).getContext("2d");
     var current_x = 0;
@@ -839,6 +824,13 @@ $(document).ready(function () {
     context.closePath(); // Close the path
     context.stroke(); // Outline the path
 
+
+    
+    // setting wave generator
+    
+    wg.generator_type('sin');
+    wg.frequency_pow(3);
+    readybool = true;
 });
 function toggleDelButton() {
     if (drawInductance == 1) {
@@ -1739,584 +1731,7 @@ function checkConnected(){
 }
 
 
-class WaveGenerator{
-    constructor(){
-        this._frequency = 0;
-        this._amplitude = 0;
-        this._inv = 1;
-        this._offset = 0;
-        this._cycle = 100000;
-        this._type = "";
-        this._offset_on = false;
-    }
-    static get square_wave(){
-        return "square_wave";
-    }
-    static get sin_wave(){
-        return "sin_wave";
-    }
-    static get triangle_wave(){
-        return "triangle_wave";
-    }
-    set_frequency(freq_val){
-        this._frequency = freq_val / 1000.0;       //調參
-        //this._frequency = freq_val
-        this._cycle = 1 / this._frequency;
-    }
-    set_amplitude(val){
-        this._amplitude = val;
-    }
-    set_inv(val){
-        this._inv = val;
-    }
-    set_offset(val){
-        this._offset = val;
-    }
-    set_type(val){
-        this._type = val;
-    }
-    set_offset_on(drawing){
-        if(this._offset_on){
-            $("#generator_offset_switch").css("backgroundColor", "white");
-            this._offset_on = false;
-        }
-        else{
-            $("#generator_offset_switch").css("backgroundColor", "green");
-            this._offset = 0;
-            this._offset_on = true;
-        }
-        if(drawing) osi.draw();
-    }
-    get frequency(){
-        return this._frequency;
-    }
-    get amplitude(){
-        return this._amplitude;
-    }
-    get inv(){
-        return this._inv;
-    }
-    get offset(){
-        return this._offset;
-    }
-    get type(){
-        return this._type;
-    }
-    get offset_on(){
-        return this._offset_on;
-    }
-    calculate_phase(res, index){
-        let a,b;
-        let phase;
-        if(index == 0){
-            a = res.voltage1.re;
-            b = res.voltage1.im;
-        }
-        else{
-            a = res.voltage2.re;
-            b = res.voltage2.im;
-        }
-        if(a > 0){
-            phase = Math.atan(b/a);
-        }
-        else if(a < 0){
-            phase = Math.atan(b/a);
-            phase += Math.PI;
-        }
-        else{ // a == 0
-            if(b > 0){
-                phase = math.PI / 2;
-            }
-            if(b <= 0){
-                phase = math.PI * 3 / 2;
-            }
-        }
-        if(phase < 0){
-            phase += 2 * math.PI;
-        }
-        return phase;
-    }
-    calculate_amplitude(res, index){
-        let a,b;
-        let amplitude;
-        if(index == 0){
-            a = res.voltage1.re;
-            b = res.voltage1.im;
-        }
-        else{
-            a = res.voltage2.re;
-            b = res.voltage2.im;
-        }
-        amplitude =  math.sqrt(a * a + b * b);
-        return amplitude;
-    }
-    voltage(t, coefficient, omega, phase, amplitude){
-        // let cycle = this._cycles[i], amplitude = this._amplitudes[i];
-        // let frequency = this._frequencys[i], type = this._types[i];
-        // let inv = this._inv[i];
-        let cycle = this._cycle;
-        let inv = this._inv;
-        let type = this._type;
-        t *= 0.003;
-        if(type == "square_wave"){
-            let result = 0;
-            result += amplitude * (1 / coefficient) * math.sin(omega * t + phase);
-            result *= (4 / Math.PI);
-            result *= inv;
-            return result;
-        }
-        else if(type == "sin_wave"){
-            return inv * amplitude * Math.sin(omega * t + phase);
-        }
-        else if(type == "triangle_wave"){
-            let result = 0;
-            result += amplitude * (1 / coefficient) * math.sin(omega * t + phase);
-            result *= (8 / Math.PI / Math.PI);
-            result *= inv;
-            return result;
-        }
-        return 0;
-    }
-    voltage_at(t, coefficient, omega, phase, amplitude){
-        //if(amplitude > 5) return 0;
-        // if(generator_offset_on){
-        //     return this._offset + this.voltage(t, coefficient, omega, phase, amplitude);
-        // }
-        return this.voltage(t, coefficient, omega, phase, amplitude);
-    }
-    
-}
-
 var wg = new WaveGenerator();
-
-class Oscillator{
-    constructor(){
-        this._power = 0;
-        this._vertical_v = [1, 1];
-        this._vertical_offset = [0, 0];
-        this._datapoints0 = [];
-        this._datapoints1 = [];
-        this._time_mul = 2/300;
-        this._time_offset = 0;
-        this._WAVE_DATA_COUNT = 1000;
-        this._vertical_AC_GND_DC = ["AC", "AC"];  //AC, GND, DC
-        this._vaild = false;
-        this._phasor = [];
-        this._loop = 100;
-        this._level = 0.05;
-        this._slope = 1;
-        this._reference = "CH1";
-        this._show_mode = "CH1";
-        this._init = false;
-        this._SWP = 1;
-    }
-    
-    set_SWP(val){
-        this._SWP = val;
-    }
-    set_init(val){
-        this._init = val;
-    }
-    set_slope(val){
-        this._slope = val;
-    }
-    set_level(val){
-        this._level = val;
-    }
-    set_refernece(val){
-        this._reference = val;
-    }
-    set_show_mode(val){
-        this._show_mode = val;
-    }
-    set_vertical_v(i, val){
-        this._vertical_v[i] = val;
-    }
-    set_vertical_offset(i, val){
-        this._vertical_offset[i] = val;
-    }
-    set_time_mul(val){
-        this._time_mul = val;
-    }
-    set_time_offset(val){
-        this._time_offset = val;
-    }
-    set_vertical_AC_GND_DC(i, val){
-        this._vertical_AC_GND_DC[i] = val;
-    }
-    get init(){
-        return this._init;
-    }
-    get slope(){
-        return this._slope;
-    }
-    get level(){
-        return this._level;
-    }
-    get reference(){
-        return this._reference;
-    }
-    get show_mode(){
-        return this._show_mode;
-    }
-    get vertical_v(){
-        return this._vertical_v;
-    }
-    get vertical_offset(){
-        return this._vertical_offset;
-    }
-    get time_mul(){
-        return this._time_mul;
-    }
-    get time_offset(){
-        return this._time_offset;
-    }
-    get vertical_AC_GND_DC(){
-        return this._vertical_AC_GND_DC;
-    }
-    get SWP(){
-        return this._SWP;
-    }
-    get_res(){
-        let type = wg.type;
-        let loop = this._loop;
-        if(type == "square_wave"){
-            for (let i = 0; i < loop; i++){
-                let omega = (2 * i + 1) * 2 * math.PI * evaluate_generator_frequency();
-                this._phasor[i] = checkCircuit(omega);
-            }
-        }else if(type == "sin_wave"){
-            let omega = 2 * math.PI * evaluate_generator_frequency();
-            this._phasor[0] = checkCircuit(omega);
-        }else if(type == "triangle_wave"){
-            for (let i = 0; i < loop; i++){
-                let omega = (2 * i + 1) * 2 * math.PI * evaluate_generator_frequency();
-                this._phasor[i] = checkCircuit(omega);
-            }
-        }
-    }
-    get_data(){
-        let WAVE_DATA_COUNT = this._WAVE_DATA_COUNT * 3;
-        if(this._init == 0 && this._vaild == false){
-            this.get_res();
-            this._vaild = true;
-        }
-
-        let tmp_wg = wg;
-        if(this._init != 0){
-            wg = new WaveGenerator();
-            wg.set_amplitude(1);
-            wg.set_frequency(1000);
-            wg.set_offset_on(false);
-            wg.set_offset(1);
-            $("#generator_offset_switch").css("backgroundColor", "white");
-            wg.set_type("square_wave");
-            this._vaild = false;
-            let loop = this._loop;
-            for(let i=0;i<loop;i++){
-                if(this._init == 1) this._phasor[i] = {voltage1:math.complex(1, 0), voltage2:math.complex(0, 0)};
-                else this._phasor[i] = {voltage1:math.complex(0, 0), voltage2:math.complex(1, 0)};
-            }
-        }
-        let type = wg.type;
-        if(type == "square_wave"){
-            let loop = this._loop;
-            for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                this._datapoints0[j] = 0;
-                this._datapoints1[j] = 0;
-            }
-            
-            for (let i = 0; i < loop; i++){
-                let omega = (2 * i + 1) * 2 * math.PI * wg.frequency * 1000 * this._SWP;
-                let res = this._phasor[i];
-                let phase0 = wg.calculate_phase(res, 0);
-                let amplitude0 = wg.calculate_amplitude(res, 0);
-                let phase1 = wg.calculate_phase(res, 1);
-                let amplitude1 = wg.calculate_amplitude(res, 1);
-                for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                    this._datapoints0[j] += wg.voltage_at((j + this._time_offset) * this._time_mul, 2 * i + 1, omega, phase0, amplitude0);
-                    this._datapoints1[j] += wg.voltage_at((j + this._time_offset) * this._time_mul, 2 * i + 1, omega, phase1, amplitude1);
-                }
-            }
-            for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                this._datapoints0[j] *= wg.amplitude;
-                this._datapoints1[j] *= wg.amplitude;
-                if(wg.offset_on && this.vertical_AC_GND_DC[0] == "DC"){
-                    this._datapoints0[j] += wg.offset;
-                }
-                if(wg.offset_on && this.vertical_AC_GND_DC[1] == "DC"){
-                    this._datapoints1[j] += wg.offset;
-                }
-            }
-        }
-        else if(type == "triangle_wave"){
-            let loop = this._loop;
-            for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                this._datapoints0[j] = 0;
-                this._datapoints1[j] = 0;
-            }
-            
-            for (let i = 0; i < loop; i++){
-                let omega = (2 * i + 1) * 2 * math.PI * wg.frequency * 1000 * this._SWP;
-                let res = this._phasor[i];
-                let phase0 = wg.calculate_phase(res, 0);
-                let amplitude0 = wg.calculate_amplitude(res, 0);
-                let phase1 = wg.calculate_phase(res, 1);
-                let amplitude1 = wg.calculate_amplitude(res, 1);
-                for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                    this._datapoints0[j] += wg.voltage_at((j + this._time_offset) * this._time_mul, pow(-1,i) * (2 * i + 1) * (2 * i + 1), omega, phase0, amplitude0);
-                    this._datapoints1[j] += wg.voltage_at((j + this._time_offset) * this._time_mul, pow(-1,i) * (2 * i + 1) * (2 * i + 1), omega, phase1, amplitude1);
-                }
-            }
-            for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                this._datapoints0[j] *= wg.amplitude;
-                this._datapoints1[j] *= wg.amplitude;
-                if(wg.offset_on && this.vertical_AC_GND_DC[0] == "DC"){
-                    this._datapoints0[j] += wg.offset;
-                }
-                if(wg.offset_on && this.vertical_AC_GND_DC[1] == "DC"){
-                    this._datapoints1[j] += wg.offset;
-                }
-            }
-        }
-        else if(type == "sin_wave"){
-            let omega = 2 * math.PI * wg.frequency * 1000 * this._SWP;
-            let res = this._phasor[0];
-            let phase0 = wg.calculate_phase(res, 0);
-            let amplitude0 = wg.calculate_amplitude(res, 0);
-            let phase1 = wg.calculate_phase(res, 1);
-            let amplitude1 = wg.calculate_amplitude(res, 1);
-            for(let i=0;i< (WAVE_DATA_COUNT);i++){
-                this._datapoints0[i] = wg.voltage_at((i + this._time_offset) * this._time_mul, 1, omega, phase0, amplitude0);
-                this._datapoints1[i] = wg.voltage_at((i + this._time_offset) * this._time_mul, 1, omega, phase1, amplitude1); 
-                if(wg.offset_on && this.vertical_AC_GND_DC[0] == "DC"){
-                    this._datapoints0[i] += wg.offset;
-                }
-                if(wg.offset_on && this.vertical_AC_GND_DC[1] == "DC"){
-                    this._datapoints1[i] += wg.offset;
-                }
-            }
-            for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                this._datapoints0[j] *= wg.amplitude;
-                this._datapoints1[j] *= wg.amplitude;
-                if(wg.offset_on && this.vertical_AC_GND_DC[0] == "DC"){
-                    this._datapoints0[j] += wg.offset;
-                }
-                if(wg.offset_on && this.vertical_AC_GND_DC[1] == "DC"){
-                    this._datapoints1[j] += wg.offset;
-                }
-            }
-        }
-        
-        // 確定使用者真的有接對
-        
-        if(this._init == 0){
-            let conn = checkConnected();
-            if(conn.voltage1 == 0){
-                for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                    this._datapoints0[j] = 0;
-                }
-                show_error("channel 1 is open.");
-            }
-            if(conn.voltage2 == 0){
-                for(let j=0;j<(WAVE_DATA_COUNT);j++){
-                    this._datapoints1[j] = 0;
-                }
-                show_error("channel 2 is open.");
-            }
-        }
-        wg = tmp_wg;
-
-    }
-    
-    power_control(){
-        if(this._power == 0){
-            this._power = 1;
-            $("#oscilloscope_power").css("backgroundColor", "green");
-        }else{
-            this._power = 0;
-            $("#oscilloscope_power").css("backgroundColor", "white");
-        }
-        check();
-    }
-    draw(){
-        document.querySelector("#error_message_content").innerHTML = ""; //初始化 show_error
-        document.getElementById("demo_frequency1").value = wg.frequency * 1000;         
-        document.getElementById("demo_amplitude1").value = wg.amplitude;
-        document.getElementById("demo_wave_type1").value = wg.type;
-        document.getElementById("demo_wave_offset1").value = wg.offset;
-        document.getElementById("demo_wave_inv1").value = wg.inv;
-        
-        let arrow_pos = this._level;
-        if(this._reference == "CH1"){
-            arrow_pos += this._vertical_offset[0];
-        }else{
-            arrow_pos += this._vertical_offset[1];
-        }
-        arrow_pos = arrow_pos * (-28) + 50;
-        $("#level_show").css("top", arrow_pos.toString() + "px");
-        
-        this.get_data();
-        let datapoints0 = [];
-        let datapoints1 = [];
-        let begin = this._WAVE_DATA_COUNT;
-        let flag = false;
-        let pre = this._datapoints0[begin] / this._vertical_v[0];
-        // pre += this._vertical_offset[0];
-
-
-
-        for(;begin < 2 * this._WAVE_DATA_COUNT && flag == false;begin++){
-            let temp = 0;
-            // let temp_level = this._level;
-            if(this._reference == "CH1"){
-                temp = this._datapoints0[begin] / this._vertical_v[0];
-                // temp += this._vertical_offset[0];
-            }else{
-                temp = this._datapoints1[begin] / this._vertical_v[1];
-                // temp += this._vertical_offset[1];
-            }
-            if(this._slope == 1 && pre <= this._level+0.05 && temp >= this._level-0.05){
-                flag = true;
-            }else if(this._slope == -1 && pre >= this._level-0.05 && temp <= this._level+0.05){
-                flag = true;
-            }
-            pre = temp;
-        }
-        begin -= this._time_offset;
-
-        if(flag == false){
-            for(let i=0;i<this._WAVE_DATA_COUNT;i++){
-                datapoints0[i] = 0.008 * i - 4;
-                datapoints1[i] = 4 - 0.008 * i;
-            }
-            show_error("trigger level is out of range!");
-        }else{
-            for(let i=begin;i < begin + (this._WAVE_DATA_COUNT);i++){
-                if(this._show_mode != 'CH2'){
-                    datapoints0[i-begin] = this._datapoints0[i] / this._vertical_v[0];
-                    datapoints0[i-begin] += this._vertical_offset[0];
-                }else{
-                    datapoints0[i-begin] = NaN;
-                }
-
-                if(this._show_mode != 'CH1'){
-                    datapoints1[i-begin] = this._datapoints1[i] / this._vertical_v[1];
-                    datapoints1[i-begin] += this._vertical_offset[1];
-                }else{
-                    datapoints1[i-begin] = NaN;
-                }
-            }
-        }
-
-        if(this._show_mode != "CH2" && this._vertical_AC_GND_DC[0] == "GND"){
-            for(let i=begin;i < begin + (this._WAVE_DATA_COUNT);i++){
-                datapoints0[i-begin] = 0;
-                datapoints0[i-begin] += this._vertical_offset[0];
-            }
-        }else if(this._show_mode == "CH2"){
-            for(let i=begin;i < begin + (this._WAVE_DATA_COUNT);i++){
-                datapoints0[i-begin] = NaN;
-            }
-        }
-
-        if(this._show_mode != "CH1" && this._vertical_AC_GND_DC[1] == "GND"){
-            for(let i=begin;i < begin + (this._WAVE_DATA_COUNT);i++){
-                datapoints1[i-begin] = 0;
-                datapoints1[i-begin] += this._vertical_offset[1];
-            }
-        }else if(this._show_mode == "CH1"){
-            for(let i=begin;i < begin + (this._WAVE_DATA_COUNT);i++){
-                datapoints1[i-begin] = NaN;
-            }
-        }
-
-        if(this._power == 0){
-            show_error("示波器的 power 沒有打開");
-            for(let i=begin;i < begin + (this._WAVE_DATA_COUNT);i++){
-                datapoints0[i-begin] = NaN;
-                datapoints1[i-begin] = NaN;
-            }
-        }
-
-
-        
-        let chartStatus = Chart.getChart("oscilloscopeScreenCanvas"); // <canvas> id
-        if (chartStatus != undefined) {
-            chartStatus.destroy();
-        }
-        const labels = [];
-        for(let i=0;i<(this._WAVE_DATA_COUNT);i++){
-            labels[i] = i+1;
-        }
-        const data = {
-            labels:labels,
-            datasets: [
-                {
-                    data: datapoints1,
-                    borderColor: 'rgb(255, 255, 0)',
-                    //backgroundColor: 'rgb(255, 255, 0)',
-                    tension: 0.4
-                },
-                {
-                    data: datapoints0,
-                    borderColor: 'rgb(0, 255, 0)',
-                    //backgroundColor: 'rgb(255, 255, 0)',
-                    tension: 0.4
-                },
-            ]
-        };
-        const config = {
-            type: 'line',
-            data: data,
-            options: {
-              responsive: true,
-              aspectRatio: 1.25,
-              plugins: {
-                legend: {
-                    display: false //要不要顯示 lable
-                  }
-              },
-              elements: {
-                point:{
-                    radius: 0
-                }
-              },
-              interaction: {
-                intersect: false,
-              },
-              scales: {
-                x: {
-                    display: false, //要不要顯示 x
-                    ticks: {
-                      color: "black", // not 'fontColor:' anymore
-                      // fontSize: 18,
-                      font: {
-                        size: 6, // 'size' now within object 'font {}'
-                      },
-                    }
-                  },
-                y: {
-                  display: false,
-                  max: 4,
-                  min: -4,
-                  padding:5,
-                  ticks: {
-                    color: "black", // not 'fontColor:' anymore
-                    // fontSize: 18,
-                    font: {
-                      size: 6, // 'size' now within object 'font {}'
-                    },
-                  }
-                }
-              }
-            },
-          };
-        var canvas = $("#oscilloscopeScreenCanvas");
-        var myChart = new Chart(canvas, config);
-    }
-}
-
 var osi = new Oscillator();
 
 
@@ -2360,7 +1775,7 @@ function checkCircuit(omega) {
         res_meter.voltage2 = x2[FG2.voltage_edgeid].mul(edge_list[FG2.voltage_edgeid].ohm);
     }
 
-    if(generator_power_on == false){
+    if(wg.power == false){
         res_meter.voltage1 = math.complex(0, 0);
         res_meter.voltage2 = math.complex(0, 0);
         document.querySelector("#error_message_content").innerHTML = ""; //初始化 show_error
@@ -2402,6 +1817,7 @@ function checkCircuit(omega) {
 
 function check() {
     document.querySelector("#error_message_content").innerHTML = ""; //初始化 show_error
+    if(readybool == false) return;
     if(startbool == false) {
         alert("請先填寫個人資料(please submit personal information first)");
         return;
@@ -2487,6 +1903,14 @@ window.onbeforeunload = () => {
 
 function start(){
     console.log("Starting");
+    
+    // check id input
+    let id = parseInt($("#id1")[0].value,10);
+    if(isNaN(id)){
+        alert("學號輸入錯誤。\nStudent Id number error.");
+        return;
+    }
+    
     osi.set_SWP(0.04 * (getRandomInteger(10) - 5) + 1);
     startbool = true;
     let date = new Date();
@@ -2502,17 +1926,6 @@ function start(){
     check();
 }
 
-function drawWave(){
-
-    wg.set_frequency(generator_frequency);
-    wg.set_amplitude(generator_AMPL);
-    wg.set_type(wave_type);
-    wg.set_inv(generator_inv_on?-1:1);
-    wg.set_offset(generator_offset);
-    
-    osi.draw();
-    //check();
-}
 
 
 function show_error(s){
@@ -2536,162 +1949,15 @@ function pow(a, x){
     return tmp;
 }
 
-function evaluate_generator_frequency(){
-    generator_frequency = generator_frequency1.toFixed(1) * pow(10,generator_frequency2.toFixed(0));
-    $("#generator_frequency").text(generator_frequency1.toFixed(1));
-    $("#generator_frequency_menu").text("10^"+generator_frequency2.toFixed(0));
-    wg.set_frequency(generator_frequency1.toFixed(1) * pow(10,generator_frequency2.toFixed(0)));
-    return generator_frequency;
-}
 
-function minus_generator_frequency(){
-    if(generator_frequency1 < 0.2)return;
-    generator_frequency1 -= 0.1;
-    evaluate_generator_frequency();
-    check();
-}
-
-function add_generator_frequency(){
-    if(generator_frequency1 > 2)return;
-    generator_frequency1 += 0.1;
-    evaluate_generator_frequency();
-    check();
-}
-
-function generator_power(){
-    if(generator_power_on){
-        $("#generator_power").css("backgroundColor", "white");
-        generator_power_on = false;
-    }
-    else{
-        $("#generator_power").css("backgroundColor", "green");
-        generator_power_on = true;
-    }
-    check();
-}
-
-function clear_generator_frequency(){
-    $("#generator_frequency6").css("backgroundColor", "white");
-    $("#generator_frequency5").css("backgroundColor", "white");
-    $("#generator_frequency4").css("backgroundColor", "white");
-    $("#generator_frequency3").css("backgroundColor", "white");
-    $("#generator_frequency2").css("backgroundColor", "white");
-    $("#generator_frequency1").css("backgroundColor", "white");
-    $("#generator_frequency0").css("backgroundColor", "white");
-    check();
-}
-
-function generator_frequency_6(){
-    clear_generator_frequency();
-    $("#generator_frequency6").css("backgroundColor", "green");
-    generator_frequency2 = 6;
-    evaluate_generator_frequency();
-    check();
-}
-
-function generator_frequency_5(){
-    clear_generator_frequency();
-    $("#generator_frequency5").css("backgroundColor", "green");
-    generator_frequency2 = 5;
-    evaluate_generator_frequency();
-    check();
-}
-
-function generator_frequency_4(){
-    clear_generator_frequency();
-    $("#generator_frequency4").css("backgroundColor", "green");
-    generator_frequency2 = 4;
-    evaluate_generator_frequency();
-    check();
-}
-
-function generator_frequency_3(){
-    clear_generator_frequency();
-    $("#generator_frequency3").css("backgroundColor", "green");
-    generator_frequency2 = 3;
-    evaluate_generator_frequency();
-    check();
-}
-
-function generator_frequency_2(){
-    clear_generator_frequency();
-    $("#generator_frequency2").css("backgroundColor", "green");
-    generator_frequency2 = 2;
-    evaluate_generator_frequency();
-    check();
-}
-
-function generator_frequency_1(){
-    clear_generator_frequency();
-    $("#generator_frequency1").css("backgroundColor", "green");
-    generator_frequency2 = 1;
-    evaluate_generator_frequency();
-    check();
-}
-
-function generator_frequency_0(){
-    clear_generator_frequency();
-    $("#generator_frequency0").css("backgroundColor", "green");
-    generator_frequency2 = 0;
-    evaluate_generator_frequency();
-    check();
-}
-
-function generator_inv(){
-    if(generator_inv_on){
-        $("#generator_inv").css("backgroundColor", "white");
-        generator_inv_on = false;
-    }
-    else{
-        $("#generator_inv").css("backgroundColor", "green");
-        generator_inv_on = true;
-    }
-    wg.set_inv(wg.inv * (-1));
-    check();
-}
-
-function clear_generator_wave(){
-    $("#generator_square").css("backgroundColor", "white");
-    $("#generator_triangle").css("backgroundColor", "white");
-    $("#generator_sin").css("backgroundColor", "white");
-}
-
-function generator_square(){
-    clear_generator_wave();
-    $("#generator_square").css("backgroundColor", "green");
-    wave_type = "square_wave";
-    $("#generator_wave_text").text(wave_type);
-    wg.set_type("square_wave");
-    check();
-}
-
-function generator_triangle(){
-    // alert("traingle wave is unimplemented!")
-    // return;
-    clear_generator_wave();
-    $("#generator_triangle").css("backgroundColor", "green");
-    wave_type = "triangle_wave";
-    $("#generator_wave_text").text(wave_type);
-    wg.set_type("triangle_wave");
-    check();
-}
-
-function generator_sin(){
-    clear_generator_wave();
-    $("#generator_sin").css("backgroundColor", "green");
-    wave_type = "sin_wave";
-    $("#generator_wave_text").text(wave_type);
-    wg.set_type("sin_wave");
-    check();
-}
-
+// unused function
 function minus_generator_duty(){
     if(generator_duty < 0.55){
         return;
     }
     generator_duty -= 0.05;
 }
-
+// unused function
 function add_generator_duty(){
     if(generator_duty > 0.95){
         return;
@@ -2700,91 +1966,10 @@ function add_generator_duty(){
 }
 
 
-function minus_generator_offset(){
-    if(wg.offset_on){
-        if(wg.offset < -30){
-            osi.draw();
-            return;
-        }
-        wg.set_offset(wg.offset - 0.1);
-        // generator_offset -= 0.1;
-    }
-    osi.draw();
-}
-
-function add_generator_offset(){
-    if(wg.offset_on){
-        if(wg.offset > 30){
-            osi.draw();
-            return;
-        }
-        wg.set_offset(wg.offset + 0.1);
-        // generator_offset += 0.1;
-    }
-    osi.draw();
-}
-
-function evaluate_generator_AMPL(){
-    wg.set_amplitude(generator_AMPL_base * pow(10, generator_AMPL_pow));
-    check();
-    generator_AMPL = generator_AMPL_base * pow(10, generator_AMPL_pow);
-}
-
-function generator_AMPL1(){
-    if(generator_AMPL1_on){
-        generator_AMPL_pow += 1;
-        $("#generator_AMPL1").css("backgroundColor", "white");
-        generator_AMPL1_on = false;
-    }
-    else{
-        generator_AMPL_pow -= 1;
-        $("#generator_AMPL1").css("backgroundColor", "green");
-        generator_AMPL1_on = true;
-    }
-    evaluate_generator_AMPL();
-}
-
-function generator_AMPL_switch(){
-    if(generator_AMPL2_on){
-        generator_AMPL_pow += 1;
-        $("#generator_AMPL_switch").css("backgroundColor", "white");
-        generator_AMPL2_on = false;
-    }
-    else{
-        generator_AMPL_pow -= 1;
-        $("#generator_AMPL_switch").css("backgroundColor", "green");
-        generator_AMPL2_on = true;
-    }
-    evaluate_generator_AMPL();
-}
-
-function minus_generator_AMPL(){
-    if(generator_AMPL_base > 1){
-        generator_AMPL_base -= 0.5;
-    }
-    evaluate_generator_AMPL();
-}
-
-function add_generator_AMPL(){
-    if(generator_AMPL_base < 14){
-        generator_AMPL_base += 0.5;
-    }
-    evaluate_generator_AMPL();
-}
-
 function generator_output_switch(){
     if(generator_output_on)return;
     $("#generator").removeClass('generator_bg0').addClass('generator_bg1');
     generator_output_on = true;
-    if(generator_output_on){
-        $("#generator_output_switch").css("backgroundColor", "white");
-        generator_output_on = false;
-    }
-    else{
-        $("#generator_output_switch").css("backgroundColor", "green");
-        generator_output_on = true;
-        drawWave();
-    }
 }
 function generator_drawline1() {
     colorNo = 0;
@@ -2805,12 +1990,12 @@ function generator_drawline2() {
         document.onmousemove = drawDashedLine2();
     }
     if (deletemode) {
-        delALLalligator = [490, 400];
+        delALLalligator = [480, 400];
     }
 }
 v_outer_dis = [5,2,1,0.5,0.2,0.1,0.05,0.02,0.01];
-v_outer_ind_1 = 4;
-v_outer_ind_2 = 4;
+v_outer_ind_1 = 2;
+v_outer_ind_2 = 2;
 function minus_vertical_v_outer1(){
     if(v_outer_ind_1 == 0) return;
     v_outer_ind_1--;
